@@ -1,7 +1,8 @@
 CREATE EXTENSION rdkit;
 CREATE SCHEMA emolecules;
 CREATE SCHEMA chembl;
-ALTER ROLE postgres SET search_path TO emolecules, chembl, public;
+CREATE SCHEMA rdk;
+ALTER ROLE postgres SET search_path TO emolecules, chembl, rdk, public;
 CREATE TABLE emolecules.raw_data (
     id SERIAL,
     smiles TEXT,
