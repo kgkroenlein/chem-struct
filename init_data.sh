@@ -10,5 +10,6 @@ createdb -U postgres chemstruct
 psql -U postgres -f build-sql/table_creates.sql -d chemstruct
 zcat version.smi.gz                            \
 | sed '1d; s/\\/\\\\/g'                        \
-| psql  -U postgres -f build-sql/stream.sql -d chemstruct
+| psql  -U postgres -d chemstruct -c           \
+"COPY raw_data (smiles, emol_id, parent_id) FROM stdin WITH DELIMITER ' '" 
 psql -U postgres -f build-sql/feature_gen.sql -d chemstruct
