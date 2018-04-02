@@ -1,4 +1,7 @@
 #!bash
+# Swap working directory to local
+cd "$(dirname "$0")"
+
 # Build images
 docker image build -t rdkit-app -f Dockerfile-rdkit .
 docker image build -t rdkit-db -f Dockerfile-postgres .
