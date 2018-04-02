@@ -1,0 +1,8 @@
+FROM informaticsmatters/rdkit_cartridge
+
+RUN mkdir $RDBASE/custom
+RUN mkdir $RDBASE/custom/build-sql
+WORKDIR $RDBASE/custom
+COPY build-sql build-sql/
+COPY init_data.sh .
+WORKDIR $RDBASE
