@@ -28,7 +28,7 @@ def closest():
     smiles {str}: What SMILES to compare with; default is:
                     'Cc1ccc2nc(-c3ccc(NC(C4N(C(c5cccs5)=O)CCC4)=O)cc3)sc2c1'
     '''
-    if 'smiles' in request.form
+    if 'smiles' in request.form:
         smiles = str(request.form['cmp_search'])
     else:
         smiles = 'Cc1ccc2nc(-c3ccc(NC(C4N(C(c5cccs5)=O)CCC4)=O)cc3)sc2c1'
