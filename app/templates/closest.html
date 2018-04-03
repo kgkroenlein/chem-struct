@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <style>
+        #candidates {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        #candidates td, #candidates th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        #candidates tr:nth-child(even){background-color: #f2f2f2;}
+        #candidates tr:hover {background-color: #ddd;}
+        #candidates th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+        }
+        </style>
+    <head>
+    <body>
+        <table id=candidates>
+        <TH>Common Name</TH><TH>SMILES</TH><TH>Similarity</TH>
+        {% for item in items %}
+        <TR>
+           <TD class="c2">{{item.name}}</TD>
+           <TD class="c4"><SPAN>{{item.smiles}}</SPAN></TD>
+           <TD class="c5"><SPAN>{{item.similarity}}</SPAN></TD>
+        </TR>
+        {% endfor %}
+        </table>
+    </body>
+</html>
