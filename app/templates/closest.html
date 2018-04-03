@@ -22,6 +22,10 @@
         </style>
     <head>
     <body>
+        <form action="/closest" method='POST'  id = 'cmp_search'>
+            <input type="text" name="smiles" >{{smiles}}</>
+            <input type="submit" />
+        </form>
         <table id=candidates>
         <TH>Common Name</TH><TH>SMILES</TH><TH>Similarity</TH>
         {% for item in items %}
