@@ -23,7 +23,7 @@ def closest():
     SELECT  md.pref_name,
             func.m,
             func.similarity
-    FROM    get_mfp2_neighbors(%s)
+    FROM    func
         JOIN molecule_dictionary AS md
         ON   md.molregno=func.molregno
     LIMIT   30;
@@ -39,7 +39,7 @@ def closest():
                      'similarity': row[2],
                   }]
 
-    return render_template('closest.html', items = result)
+    return render_template('closest.html', items = results)
 
 @app.errorhandler(404)
 def page_not_found(error):
