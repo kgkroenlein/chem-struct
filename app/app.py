@@ -29,7 +29,7 @@ def closest():
                     'Cc1ccc2nc(-c3ccc(NC(C4N(C(c5cccs5)=O)CCC4)=O)cc3)sc2c1'
     '''
     if 'smiles' in request.form:
-        smiles = str(request.form['cmp_search'])
+        smiles = str(request.form['smiles'])
     else:
         smiles = 'Cc1ccc2nc(-c3ccc(NC(C4N(C(c5cccs5)=O)CCC4)=O)cc3)sc2c1'
 
