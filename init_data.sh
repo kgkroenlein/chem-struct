@@ -1,6 +1,24 @@
 #!bash
 cd "$(dirname "$0")"
 
+# There was a race condition condition around database start-up
+while [ -z `which pg_isready` ]; do sleep 1; done
+while [ true ]; do
+  echo 'Polling database...';
+  pg_isready -q;
+  PG_STATUS=$?;
+  sleep 1;
+  if [ "$PG_STATUS" == 0 ]; then
+    echo 'Ready';
+    break;
+  fi
+  echo $PG_STATUS;
+done
+#pg_isready -q
+#while [ $? != 0 ]; do pg_isready -q; sleep 1; done
+#pg_isready
+sleep 1
+
 createdb -U postgres chemstruct
 psql -U postgres -f build-sql/table_creates.sql -d chemstruct
 zcat data/version.smi.gz                       \
