@@ -33,6 +33,12 @@ psql -U postgres -d chemstruct -c                                              \
     "ALTER ROLE postgres SET search_path TO chembl;"
 pg_restore --no-owner -U postgres -d chemstruct                                \
     data/chembl_23/chembl_23_postgresql/chembl_23_postgresql.dmp
+# Import happens into public space for some unclear reason
+psql -U postgres -d chemstruct -c                                              \
+    "ALTER ROLE postgres SET search_path TO public;"
+for TABLE in $( psql -U postgres -d chemstruct -tc "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';" ); do
+    psql -U postgres -d chemstruct -c "ALTER TABLE $TABLE SET SCHEMA chembl;"
+done
 psql -U postgres -d chemstruct -c                                              \
     "ALTER ROLE postgres SET search_path TO $PATH_CACHE;"
 

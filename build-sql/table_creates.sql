@@ -1,5 +1,6 @@
 -- Schemas and extensions
 CREATE EXTENSION rdkit;
+CREATE SCHEMA chemstruct;
 CREATE SCHEMA emolecules;
 CREATE SCHEMA chembl;
 CREATE SCHEMA rdk;
@@ -11,8 +12,8 @@ TO chemstruct, emolecules, chembl, rdk, public;
 -- Store raw data from emolecules
 -- https://www.emolecules.com/info/plus/download-database
 CREATE TABLE emolecules.raw_data (
-    id SERIAL,
-    smiles TEXT,
+    id      SERIAL,
+    smiles  TEXT,
     emol_id INTEGER,
     parent_id INTEGER
 );
