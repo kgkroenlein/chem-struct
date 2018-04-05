@@ -1,6 +1,6 @@
 -- Generate molecule table from SMILES
 SELECT  *
-INTO    mols
+INTO    emolecules.mols
 FROM (
     SELECT  id,
             mol_from_smiles(smiles::cstring) AS m
