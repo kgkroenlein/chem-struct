@@ -8,8 +8,10 @@ cd "$(dirname "$0")"
 
 mkdir -p data
 
-apt-get update -y
-apt-get install curl -y
+# apt-get update -y
+# apt-get install curl -y
+sudo yum update -y
+sudo yum install curl -y
 
 curl http://downloads.emolecules.com/free/2018-03-01/version.smi.gz > data/version.smi.gz
 curl ftp://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_23_postgresql.tar.gz > data/chembl_23_postgresql.tar.gz
