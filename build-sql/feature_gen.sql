@@ -35,7 +35,7 @@ SELECT  molregno,
         torsionbv_fp(m) AS torsionbv,
         morganbv_fp(m) AS mfp2,
         featmorganbv_fp(m) AS ffp2,
-        rdkitbv_fp(m) AS rdkitbv,
+        rdkit_fp(m) AS rdkitbv,
         atompair_fp(m) AS atompair,
         maccs_fp(m) AS maccs
 INTO rdk.fps
@@ -126,11 +126,11 @@ RETURNS TABLE(molregno INTEGER, m mol, similarity DOUBLE PRECISION) AS
 $$
 SELECT  molregno,
         m,
-        tanimoto_sml(rdkitbv_fp(mol_from_smiles($1::cstring)),rdkitbv) AS similarity
+        tanimoto_sml(rdkit_fp(mol_from_smiles($1::cstring)),rdkitbv) AS similarity
 FROM    rdk.fps
     JOIN    rdk.mols USING (molregno)
-WHERE   rdkitbv_fp(mol_from_smiles($1::cstring))%rdkitbv
-ORDER BY    rdkitbv_fp(mol_from_smiles($1::cstring))<%>rdkitbv;
+WHERE   rdkit_fp(mol_from_smiles($1::cstring))%rdkitbv
+ORDER BY    rdkit_fp(mol_from_smiles($1::cstring))<%>rdkitbv;
 $$ language sql stable ;
 
 --- Compute the atom-pair near neighbors
