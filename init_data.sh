@@ -12,7 +12,6 @@ while [ true ]; do
     echo 'Ready';
     break;
   fi
-  echo $PG_STATUS;
 done
 sleep 1
 

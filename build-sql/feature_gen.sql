@@ -36,7 +36,7 @@ SELECT  molregno,
         morganbv_fp(m) AS mfp2,
         featmorganbv_fp(m) AS ffp2,
         rdkit_fp(m) AS rdkitbv,
-        atompair_fp(m) AS atompair,
+        atompairbv_fp(m) AS atompair,
         maccs_fp(m) AS maccs
 INTO rdk.fps
 FROM rdk.mols
@@ -139,11 +139,11 @@ RETURNS TABLE(molregno INTEGER, m mol, similarity DOUBLE PRECISION) AS
 $$
 SELECT  molregno,
         m,
-        tanimoto_sml(atompair_fp(mol_from_smiles($1::cstring)),atompair) AS similarity
+        tanimoto_sml(atompairbv_fp(mol_from_smiles($1::cstring)),atompair) AS similarity
 FROM    rdk.fps
     JOIN    rdk.mols USING (molregno)
-WHERE   atompair_fp(mol_from_smiles($1::cstring))%atompair
-ORDER BY    atompair_fp(mol_from_smiles($1::cstring))<%>atompair;
+WHERE   atompairbv_fp(mol_from_smiles($1::cstring))%atompair
+ORDER BY    atompairbv_fp(mol_from_smiles($1::cstring))<%>atompair;
 $$ language sql stable ;
 
 --- Compute the MACCS near neighbors
