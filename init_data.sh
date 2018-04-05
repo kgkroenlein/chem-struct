@@ -14,9 +14,6 @@ while [ true ]; do
   fi
   echo $PG_STATUS;
 done
-#pg_isready -q
-#while [ $? != 0 ]; do pg_isready -q; sleep 1; done
-#pg_isready
 sleep 1
 
 createdb -U postgres chemstruct
@@ -25,7 +22,11 @@ zcat data/version.smi.gz                       \
 | sed '1d; s/\\/\\\\/g'                        \
 | psql  -U postgres -d chemstruct -c           \
 "COPY raw_data (smiles, emol_id, parent_id) FROM stdin WITH DELIMITER ' '"
-tar -xzf data/chembl_23_postgresql.tar.gz
+
+cd data
+tar -xzf chembl_23_postgresql.tar.gz
+cd "$(dirname "$0")"
+
 PATH_CACHE=`psql -U postgres -tc 'SHOW search_path'`
 psql -U postgres -d chemstruct -c              \
 "ALTER ROLE postgres SET search_path TO chembl;"
