@@ -21,7 +21,7 @@ The goal of this project is to explore choices of feature sets and similarity me
 ## Data
 A molecular fingerprint is simply a bit vector generated from a large feature set of a two-dimensional chemical structure (a graph with a small amount of 3-dimensional orientation disambiguation). Using molecular fingerprints as the bases for clustering, we can evaluate whether the concepts of chemical relationship as perceived by chemists align with the clustering reported by the algorithm. Further, from a practical perspective, this should allow for rapid determination of whether particular predictive models are likely or unlikely to yield reasonable results for a given molecule.
 
-Regarding data, I presently have access to an archive of around 700 thousand 2-d chemical structures along with well-curated identifiers. Many of those records also have families of optimized 3-d molecular structures (“conformers”), which may be valuable for physical insight but should not be used in the final modeling efforts. Several million additional two-dimensional structures are available from PubChem if the original data proves inadequate and for vetting coverage over chemical similarity hyperspaces.
+Regarding data, I presently have access to an archive of around 1.7 million 2-D structures imported from emolecules along with well-curated identifiers. Many of those records also have families of optimized 3-d molecular structures (“conformers”), which may be valuable for physical insight but should not be used in the final modeling efforts. Several million additional two-dimensional structures are available from PubChem if the original data proves inadequate and for vetting coverage over chemical similarity hyperspaces.
 
 ## Approach
 In addition to the structural information, it is necessary to utilize software libraries to obtain chemical descriptors2.  Beginning with the standard extended molecular fingerprints, candidate subsets and alternative formulations will to evaluated for statistically significant impacts on classification capability.
@@ -31,9 +31,10 @@ Finally, it is necessary to identify score functions for how well any given tree
 Due to the size of the necessary hyperparameter grid search, AWS will be necessary in order to explore the space in a time-efficient, highly parallelized manner. scipy.stats and Scikit Learn will provide the statistical analysis and learning packages (e.g., a/b testing, tree construction).
 
 ## Installation
-The archive should contain everything needed to recreate the tool.
+The archive should contain everything needed to recreate the tool.  If you are running a new fresh AWS instance (minimum 50 GB attached storage), you can run the following series of commands, presuming you edited your `.ssh/config` file appropriately:
 
 ```bash
+ssh $YOUR_AWS_INSTANCE sudo yum install git -y
 ssh $YOUR_AWS_INSTANCE git clone https://github.com/kgkroenlein/chem-struct.git
 ssh $YOUR_AWS_INSTANCE bash chem-struct/aws_docker_init.sh
 ssh $YOUR_AWS_INSTANCE bash chem-struct/fetch_data.sh
