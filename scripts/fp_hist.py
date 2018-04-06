@@ -78,7 +78,7 @@ def gather_others_hist(conn = aws_context_db(), table='lipophilicity'):
         SELECT  t1.molregno regno,
                 COUNT(*)
         FROM    (
-                SELECT  molregno,
+                SELECT  molregno
                 FROM    compound_structures
                 WHERE   molregno NOT IN (SELECT molregno FROM {})
                 ORDER BY RANDOM()
