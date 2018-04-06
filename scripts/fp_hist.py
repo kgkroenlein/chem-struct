@@ -18,7 +18,7 @@ def aws_context_db():
                             )
     return conn
 
-def gather_hist(conn = aws_context_db(), table='lipophilicity'):
+def gather_hist(conn = None, table='lipophilicity'):
     '''
     Gather the fingerprint nearest neighbors
 
@@ -30,6 +30,9 @@ def gather_hist(conn = aws_context_db(), table='lipophilicity'):
     Dictionary of dictionaries of how many nearset neighbors each compound in
     the lipophilicity table has, indexed by molregno
     '''
+    if not conn:
+        conn = aws_context_db()
+
     results = dict()
     for fp in ('mfp2', 'ffp2', 'torsionbv', 'atompair', 'rdkitbv', 'maccs'):
         sql = '''
@@ -54,7 +57,7 @@ def gather_hist(conn = aws_context_db(), table='lipophilicity'):
 
     return results
 
-def gather_others_hist(conn = aws_context_db(), table='lipophilicity'):
+def gather_others_hist(conn = None, table='lipophilicity'):
     '''
     Gather the labeled fingerprint nearest neighbors for a random sample of
     compounds not in the label set
@@ -67,6 +70,9 @@ def gather_others_hist(conn = aws_context_db(), table='lipophilicity'):
     Dictionary of dictionaries of how many nearset neighbors each compound in
     the lipophilicity table has, indexed by molregno
     '''
+    if not conn:
+        conn = aws_context_db()
+
     results = dict()
     for fp in ('mfp2', 'ffp2', 'torsionbv', 'atompair', 'rdkitbv', 'maccs'):
         cur = conn.cursor()
