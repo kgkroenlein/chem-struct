@@ -54,6 +54,53 @@ def gather_hist(conn = aws_context_db(), table='lipophilicity'):
 
     return results
 
+def gather_others_hist(conn = aws_context_db(), table='lipophilicity'):
+    '''
+    Gather the labeled fingerprint nearest neighbors for a random sample of
+    compounds not in the label set
+
+    Inputs:
+    conn: {psycopg2 connection} DB connection; defaults to aws_context_db()
+    table: which data table to explore, with a default of lipophilicity
+
+    Returns:
+    Dictionary of dictionaries of how many nearset neighbors each compound in
+    the lipophilicity table has, indexed by molregno
+    '''
+    results = dict()
+    for fp in ('mfp2', 'ffp2', 'torsionbv', 'atompair', 'rdkitbv', 'maccs'):
+        cur = conn.cursor()
+        cur.execute('SELECT setseed(0.42);')
+        for row in cur:
+            pass # Clear the cursor
+
+        sql = '''
+        SELECT  t1.molregno regno,
+                COUNT(*)
+        FROM    (
+                SELECT  molregno,
+                FROM    compound_structures
+                WHERE   molregno NOT IN (SELECT molregno FROM {})
+                ORDER BY RANDOM()
+                LIMIT 1000
+                ) AS t1,
+                {} t2,
+                rdk.fps f1,
+                rdk.fps f2,
+                tanimoto_sml( f1.{}, f2.{} ) AS similarity
+        WHERE   f1.{} % f2.{}
+          AND   t1.molregno = f1.molregno
+          AND   t2.molregno = f2.molregno
+        GROUP BY t1.molregno;
+        '''.format(table, table,fp,fp,fp,fp)
+
+        cur.execute(sql)
+        results[fp] = dict()
+        for row in cur:
+            results[fp][row[0]] = row[1]
+
+    return results
+
 def store_data(data, filename = 'hist_data.pkl'):
     '''
     Pickle the passed dictionary of dictionary of neighbor counts
