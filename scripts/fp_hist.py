@@ -48,10 +48,10 @@ def gather_hist(conn = aws_context_db(), table='lipophilicity'):
 
         cur = conn.cursor()
         cur.execute(sql)
-        results = dict()
+        results[fp] = dict()
         for row in cur:
             print(row[1])
-            results[row[0]] = row[1]
+            results[fp][row[0]] = row[1]
 
     return results
 
