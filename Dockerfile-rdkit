@@ -11,7 +11,7 @@ ENV PATH /root/miniconda3/bin:$PATH
 RUN conda install -c rdkit -y python==3.6 rdkit
 
 # Add application components
-RUN conda install flask scikit-learn numpy psycopg2
+RUN conda install flask scikit-learn numpy psycopg2 matplotlib
 
 ENV RDBASE=/rdkit
 
