@@ -17,4 +17,4 @@ curl http://downloads.emolecules.com/free/2018-03-01/version.smi.gz > data/versi
 curl ftp://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_23_postgresql.tar.gz > data/chembl_23_postgresql.tar.gz
 curl http://deepchem.io.s3-website-us-west-1.amazonaws.com/datasets/delaney-processed.csv > data/delaney-processed.csv
 curl http://deepchem.io.s3-website-us-west-1.amazonaws.com/datasets/SAMPL.csv > data/SAMPL.csv
-http://deepchem.io.s3-website-us-west-1.amazonaws.com/datasets/Lipophilicity.csv > data/Lipophilicity.csv
+curl http://deepchem.io.s3-website-us-west-1.amazonaws.com/datasets/Lipophilicity.csv > data/Lipophilicity.csv
