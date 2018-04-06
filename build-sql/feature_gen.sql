@@ -30,6 +30,12 @@ ALTER TABLE rdk.mols
 ADD PRIMARY KEY (molregno)
 ;
 
+-- And turn it into a foreign key
+ALTER TABLE rdk.mols
+ADD CONSTRAINT fk_rdk_molregno
+FOREIGN KEY (molregno)
+REFERENCES molecule_dictionary(molregno);
+
 --- Generate and stash fingerprints
 SELECT  molregno,
         torsionbv_fp(m) AS torsionbv,
@@ -77,6 +83,7 @@ CREATE INDEX fps_maccs_idx
 ON rdk.fps
 USING gist(maccs)
 ;
+
 ALTER TABLE rdk.fps
 ADD PRIMARY KEY (molregno)
 ;
@@ -158,3 +165,78 @@ FROM    rdk.fps
 WHERE   maccs_fp(mol_from_smiles($1::cstring))%maccs
 ORDER BY    maccs_fp(mol_from_smiles($1::cstring))<%>maccs;
 $$ language sql stable ;
+
+-- -- Index solubility table
+-- ALTER TABLE chemstruct.solubility
+--     ADD CONSTRAINT fk_solu_smiles_id
+--     FOREIGN KEY (chembl_id)
+--     REFERENCES chembl_id_lookup(chembl_id);
+
+-- Build structures for solubility
+ALTER TABLE chemstruct.solubility
+ADD COLUMN m mol;
+
+-- Populate it
+UPDATE  chemstruct.solubility
+SET     m = mol_from_smiles(smiles::cstring);
+
+-- Index table for structure searches
+CREATE INDEX solu_m_idx
+ON chemstruct.solubility
+USING gist(m)
+;
+
+-- Add molregno column
+ALTER TABLE chemstruct.solubility
+ADD COLUMN molregno INTEGER;
+
+-- Populate it; We have to do this piecemeal because struct comparison is slow!
+UPDATE  chemstruct.solubility
+SET     molregno = compound_structures.molregno
+FROM    chembl.compound_structures
+WHERE   solubility.smiles=compound_structures.canonical_smiles;
+
+SET rdkit.tanimoto_threshold=1; -- Filter out most of what remains
+
+UPDATE  chemstruct.solubility
+SET     molregno = sub_regno
+FROM (
+        SELECT  smiles AS sub_smiles,
+                rdk.fps.molregno AS sub_regno
+        FROM    solubility,
+                rdk.fps
+        WHERE   atompairbv_fp(m)%atompair
+          AND   solubility.molregno IS NULL
+    )AS sub,
+        rdk.mols
+WHERE   sub_smiles = smiles
+  AND   rdk.mols.molregno = sub_regno
+  AND   chemstruct.solubility.m @= rdk.mols.m;
+
+-- And turn it into a key
+ALTER TABLE chemstruct.solubility
+ADD CONSTRAINT fk_lipo_molregno
+FOREIGN KEY (molregno)
+REFERENCES chembl_id_lookup(chembl_id);
+
+-- Index lipophilicity table
+ALTER TABLE chemstruct.lipophilicity
+ADD CONSTRAINT fk_lipo_chembl_id
+FOREIGN KEY (chembl_id)
+REFERENCES chembl_id_lookup(chembl_id);
+
+-- Add column for molregno
+ALTER TABLE chemstruct.lipophilicity
+ADD COLUMN molregno INTEGER;
+
+-- Populate it
+UPDATE  chemstruct.lipophilicity
+SET     molregno = entity_id
+FROM    chembl_id_lookup
+WHERE   lipophilicity.chembl_id=chembl_id_lookup.chembl_id;
+
+-- And turn it into a key
+ALTER TABLE chemstruct.lipophilicity
+ADD CONSTRAINT fk_lipo_molregno
+FOREIGN KEY (molregno)
+REFERENCES molecule_dictionary(molregno);

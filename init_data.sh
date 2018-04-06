@@ -27,6 +27,10 @@ psql -U postgres -d chemstruct -c                                              \
     "COPY solubility FROM stdin WITH DELIMITER ',' csv header"                 \
     < data/delaney-processed.csv
 
+psql -U postgres -d chemstruct -c                                              \
+    "COPY lipophilicity FROM stdin WITH DELIMITER ',' csv header"                 \
+    < data/Lipophilicity.csv
+
 tar -xzf data/chembl_23_postgresql.tar.gz --directory=data
 PATH_CACHE=`psql -U postgres -tc 'SHOW search_path'`
 psql -U postgres -d chemstruct -c                                              \

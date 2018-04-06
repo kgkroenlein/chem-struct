@@ -31,3 +31,10 @@ CREATE TABLE chemstruct.solubility (
     measure  DOUBLE PRECISION   NOT NULL,
     smiles   VARCHAR(200)       PRIMARY KEY
 );
+
+-- Data cited from ChEMBL, (Hersey 2015), but I can't find the primary source(s)
+CREATE TABLE chemstruct.lipophilicity (
+    chembl_id   VARCHAR(20)         PRIMARY KEY,
+    value       DOUBLE PRECISION    NOT NULL,
+    smiles      VARCHAR(400)        NOT NULL
+);
