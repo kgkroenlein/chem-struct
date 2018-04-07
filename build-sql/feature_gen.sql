@@ -213,11 +213,12 @@ WHERE   sub_smiles = smiles
   AND   rdk.mols.molregno = sub_regno
   AND   chemstruct.solubility.m @= rdk.mols.m;
 
--- And turn it into a key
-ALTER TABLE chemstruct.solubility
-ADD CONSTRAINT fk_lipo_molregno
-FOREIGN KEY (molregno)
-REFERENCES chembl_id_lookup(chembl_id);
+-- A key would be good, but population is still inaquequate
+---- And turn it into a key
+--ALTER TABLE chemstruct.solubility
+--ADD CONSTRAINT fk_solu_molregno
+--FOREIGN KEY (molregno)
+--REFERENCES molecule_dictionary(molregno);
 
 -- Index lipophilicity table
 ALTER TABLE chemstruct.lipophilicity
