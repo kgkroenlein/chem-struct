@@ -138,7 +138,7 @@ def gather_neighbor_list(conn = None, table='lipophilicity'):
         WHERE   f1.{} % f2.{}
           AND   t1.molregno = f1.molregno
           AND   t2.molregno = f2.molregno
-        '''.format(table,table,fp,fp,fp,fp)
+        '''.format(fp,fp,table,table,fp,fp)
 
         cur.execute(sql)
         for row in cur:
