@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import psycopg2
 import os
+from collections import defaultdict
 
 '''
 Script for generating histograms off of fingerprint neighborhood distributions
@@ -20,7 +21,7 @@ def aws_context_db():
 
 def gather_hist(conn = None, table='lipophilicity'):
     '''
-    Gather the fingerprint nearest neighbors
+    Gather the counts of fingerprint nearest neighbors
 
     Inputs:
     conn: {psycopg2 connection} DB connection; defaults to aws_context_db()
@@ -59,8 +60,8 @@ def gather_hist(conn = None, table='lipophilicity'):
 
 def gather_others_hist(conn = None, table='lipophilicity'):
     '''
-    Gather the labeled fingerprint nearest neighbors for a random sample of
-    compounds not in the label set
+    Gather the counts of labeled fingerprint nearest neighbors for a random
+    sample of compounds not in the label set
 
     Inputs:
     conn: {psycopg2 connection} DB connection; defaults to aws_context_db()
@@ -105,6 +106,45 @@ def gather_others_hist(conn = None, table='lipophilicity'):
         for row in cur:
             results[fp][row[0]] = row[1]
 
+    return results
+
+def gather_neighbor_list(conn = None, table='lipophilicity'):
+    '''
+    Gather the fingerprint nearest neighbors
+
+    Inputs:
+    conn: {psycopg2 connection} DB connection; defaults to aws_context_db()
+    table: which data table to explore, with a default of lipophilicity
+
+    Returns:
+    Dictionary of dictionaries of dictionaries of molregno of nearest neighbors,
+    indexed by fingerprint and molregno with values of similarity
+    '''
+    if not conn:
+        conn = aws_context_db()
+
+    cur.execute('SET rdkit.tanimoto_threshold TO 0.3;');
+    results = defaultdict(defaultdict(dict))
+    for fp in ('mfp2', 'ffp2', 'torsionbv', 'atompair', 'rdkitbv', 'maccs'):
+        sql = '''
+        SELECT  t1.molregno this,
+                t2.molregno neighbor,
+                tanimoto_sml( f1.{}, f2.{} ) AS similarity
+        FROM    {} t1,
+                {} t2,
+                rdk.fps f1,
+                rdk.fps f2
+        WHERE   f1.{} % f2.{}
+          AND   t1.molregno = f1.molregno
+          AND   t2.molregno = f2.molregno
+        '''.format(table,table,fp,fp,fp,fp)
+
+        cur = conn.cursor()
+        cur.execute(sql)
+        for row in cur:
+            results[fp][row[0]][row[1]] = row[2]
+
+    cur.execute('SET rdkit.tanimoto_threshold TO DEFAULT;');
     return results
 
 def store_data(data, filename = 'hist_data.pkl'):
