@@ -125,7 +125,7 @@ def gather_neighbor_list(conn = None, table='lipophilicity'):
 
     cur = conn.cursor()
     cur.execute('SET rdkit.tanimoto_threshold TO 0.3;');
-    results = defaultdict(defaultdict(dict))
+    results = defaultdict(lambda: defaultdict(dict))
     for fp in ('mfp2', 'ffp2', 'torsionbv', 'atompair', 'rdkitbv', 'maccs'):
         sql = '''
         SELECT  t1.molregno this,
