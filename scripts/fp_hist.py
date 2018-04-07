@@ -123,6 +123,7 @@ def gather_neighbor_list(conn = None, table='lipophilicity'):
     if not conn:
         conn = aws_context_db()
 
+    cur = conn.cursor()
     cur.execute('SET rdkit.tanimoto_threshold TO 0.3;');
     results = defaultdict(defaultdict(dict))
     for fp in ('mfp2', 'ffp2', 'torsionbv', 'atompair', 'rdkitbv', 'maccs'):
@@ -139,7 +140,6 @@ def gather_neighbor_list(conn = None, table='lipophilicity'):
           AND   t2.molregno = f2.molregno
         '''.format(table,table,fp,fp,fp,fp)
 
-        cur = conn.cursor()
         cur.execute(sql)
         for row in cur:
             results[fp][row[0]][row[1]] = row[2]
