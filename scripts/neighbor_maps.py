@@ -76,7 +76,7 @@ def gather_near_neighbors(n = 15, conn = None, output=False,
                     result[fp_name][id][n_id] = similarity
 
                 # Did we get enough?
-                if len(result[fp_name][id] >= n):
+                if len(result[fp_name][id]) >= n:
                     break
 
                 # Lower the threshold and try again
