@@ -31,7 +31,7 @@ if __name__ == '__main__':
         summ = defaultdict(lambda:0)
         for fp in ('mfp2', 'ffp2', 'torsionbv', 'atompair', 'rdkitbv', 'maccs'):
             for n_id in nmap[fp][id]:
-                if nmap[fp][id][n_id] != 1 #and nmap[fp][id][n_id] > .6:
+                if nmap[fp][id][n_id] != 1: #and nmap[fp][id][n_id] > .6:
                     weight = np.exp(25.0*nmap[fp][id][n_id])
                     norm[fp] += weight
                     summ[fp] += fps[n_id]['value']*weight
