@@ -64,7 +64,7 @@ def gather_near_neighbors(n = 15, conn = None, output=False,
         base_cur.execute(neighbor_sql_tmpl.format( *(fp_name,)*6, n ))
 
         cmp_cur = conn.cursor() # Cursor for getting compound list
-        cur.execute(compound_sql.format(fp_name))
+        cmp_cur.execute(compound_sql.format(fp_name))
         tol = 0.5
         for i, (id,) in enumerate(cmp_cur):
             if output and i % 100 == 0:
