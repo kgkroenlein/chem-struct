@@ -71,7 +71,8 @@ def gather_near_neighbors(n = 15, conn = None, output=False,
                 print('Compound {:4.0f}:{}'.format(i,id))
             while True:
                 n_cur = conn.cursor()
-                n_cur.execute('EXECUTE neighbor_plan (%s)', (id,))
+                n_cur.execute('EXECUTE {}_neighbor_plan (%s)'.format(fp_name),
+                              (id,))
                 for (n_id, similarity) in n_cur:
                     result[fp_name][id][n_id] = similarity
 
