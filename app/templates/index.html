@@ -1,16 +1,50 @@
 <html>
-    <body>
-        <h1>This is my index page. There are many like it, but this one is mine.</h1>
+<!DOCTYPE html>
+<html manifest1="chemEditor.manifest1">
+<head>
+	<meta charset="UTF-8">
+	<title>Chem-Struct</title>
+    <script src="{{
+          url_for('static', filename='kekule/kekule.js') }}?modules=chemWidget,algorithm"></script>
+	<!--
+	<script src="../../../../src/kekule.js?modules=chemWidget,algorithm&min=false"></script>
+	-->
+	<link rel="stylesheet" type="text/css" href="{{
+          url_for('static', filename='kekule/themes/default/kekule.css') }}" />
 
-        <p>My index page is my best friend. It is my life. I must master it as I must master my life.
+	<script>
 
-        <p>Without me, my index page is useless. Without my index page, I am useless. I must write my index page true. I must write clearer than my enemy who is trying to kill me. I must write mine before he writes his. I will…
+		var chemEditor;
+		var chemComposer
+		function init()
+		{
+			var elem = document.getElementById('composer');
+			var chemEditor = new Kekule.Editor.ChemSpaceEditor(document, null, Kekule.Render.RendererType.R2D);
+			chemComposer = new Kekule.Editor.Composer(elem, chemEditor);
+            chemComposer.setPredefinedSetting('fullFunc');
 
-        <p>My index page and I know that what counts in the Internet is not the pages we write, the bandwidth of our network, nor the lols we make. We know that it is the hits that count. We will hit…
+			// adjust size
+			adjustSize();
 
-        <p>My index page is human, even as I, because it is my life. Thus, I will learn it as a brother. I will learn its weaknesses, its strength, its parts, its accessories, its tags and its content. I will keep my index page clean and ready, even as I am clean and ready. We will become part of each other. We will…
+			window.onresize = adjustSize;
+		}
+		function adjustSize()
+		{
+			var dim = Kekule.HtmlElementUtils.getViewportDimension(document);
+			chemComposer.setWidth(dim.width - 50 + 'px').setHeight(dim.height - 200 + 'px');
+		}
 
-        <p>Before God, I swear this creed. My index page and I are the defenders of my namespace. We are the masters of our enemy. We are the saviors of my life.
-        <p>So be it, until victory is America's and there is no enemy, but peace!    </body>
-        <p><a href='closest'>Here is the table of kNNs</a><p>
+		Kekule.X.domReady(init);
+	</script>
+</head>
+    <body onload="init()">
+        <h1>Chem-Struct</h1>
+
+        <h3><a href='https://github.com/kgkroenlein/chem-struct/blob/master/README.md'>A web application for relating chemical properties to underlying structure</a></h3>
+        <form id="str-search" action='/str-search'>Search by identifier:
+            <input type='text' />
+            <input type='submit' />
+        </form>
+        <p>-OR- draw your own molecule</p>
+        <div id="composer" style="width:800px;height:600px"></div>
 </html>
