@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from util import store_data, load_data
 
-def gather_near_neighbors(n = 15, conn = None, output=False
+def gather_near_neighbors(n = 15, conn = None, output=False,
           fps = ('mfp2', 'ffp2', 'torsionbv', 'atompair', 'rdkitbv', 'maccs')):
     """Example function with types documented in the docstring.
 
@@ -42,7 +42,7 @@ def gather_near_neighbors(n = 15, conn = None, output=False
     tol_sql = 'SET rdkit.tanimoto_threshold TO %s'
 
     neighbor_sql_tmpl = '''
-    PREPARE neighbor_plan
+    PREPARE neighbor_plan AS
     SELECT  fp2.molregno AS molregno,
             tanimoto_sml(fp1.{}, fp2.{}) AS similarity
     FROM    lipophilicity t2,
@@ -61,7 +61,7 @@ def gather_near_neighbors(n = 15, conn = None, output=False
             print('Starting ', fp_name)
 
         base_cur = conn.cursor() # Reused cursor
-        base_cur.execute(neighbor_sql_tmpl.format( *(fp_name)*6, n ))
+        base_cur.execute(neighbor_sql_tmpl.format( *((fp_name)*6), n ))
 
         cmp_cur = conn.cursor() # Cursor for getting compound list
         cur.execute(compound_sql.format(fp_name))
