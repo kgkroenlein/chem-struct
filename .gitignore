@@ -106,3 +106,4 @@ ENV/
 data/*
 !data/ESOL.csv
 *.pkl
+app/static/kekule
