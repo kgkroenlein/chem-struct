@@ -61,7 +61,7 @@ def gather_near_neighbors(n = 15, conn = None, output=False,
             print('Starting ', fp_name)
 
         base_cur = conn.cursor() # Reused cursor
-        base_cur.execute(neighbor_sql_tmpl.format( *((fp_name)*6), n ))
+        base_cur.execute(neighbor_sql_tmpl.format( *(fp_name,)*6, n ))
 
         cmp_cur = conn.cursor() # Cursor for getting compound list
         cur.execute(compound_sql.format(fp_name))
