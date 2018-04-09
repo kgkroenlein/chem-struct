@@ -105,3 +105,4 @@ ENV/
 # Distribution specific info
 data/*
 !data/ESOL.csv
+*.pkl
