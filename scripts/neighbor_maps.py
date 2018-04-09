@@ -49,6 +49,7 @@ def gather_near_neighbors(n = 15, conn = None, output=False,
             rdk.fps fp1,
             rdk.fps fp2
     WHERE   fp1.molregno = $1
+      AND   fp1.molregno <> fp2.molregno
       AND   fp2.molregno = t2.molregno
       AND   fp1.{}%fp2.{}
     ORDER BY fp1.{}<%>fp2.{}
