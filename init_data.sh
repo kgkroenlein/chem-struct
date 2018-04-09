@@ -13,7 +13,7 @@ while [ true ]; do
     break;
   fi
 done
-sleep 1
+sleep 2
 
 createdb -U postgres chemstruct
 psql -U postgres -f build-sql/table_creates.sql -d chemstruct
