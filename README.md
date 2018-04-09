@@ -37,7 +37,7 @@ The archive should contain everything needed to recreate the tool.  If you are r
 ssh $YOUR_AWS_INSTANCE sudo yum install git -y
 ssh $YOUR_AWS_INSTANCE git clone https://github.com/kgkroenlein/chem-struct.git
 ssh $YOUR_AWS_INSTANCE bash chem-struct/aws_docker_init.sh
-ssh $YOUR_AWS_INSTANCE bash chem-struct/fetch_data.sh
+ssh $YOUR_AWS_INSTANCE bash chem-struct/fetch_s3.sh
 ssh $YOUR_AWS_INSTANCE bash chem-struct/init.sh
 ```        
 
