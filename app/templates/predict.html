@@ -1,0 +1,22 @@
+<html>
+<!DOCTYPE html>
+<html manifest1="chemEditor.manifest1">
+<head>
+	<meta charset="UTF-8">
+	<title>Chem-Struct</title>
+    <script src="{{
+          url_for('static', filename='kekule/kekule.js') }}?modules=chemWidget,algorithm"></script>
+	<!--
+	<script src="../../../../src/kekule.js?modules=chemWidget,algorithm&min=false"></script>
+	-->
+	<link rel="stylesheet" type="text/css" href="{{
+          url_for('static', filename='kekule/themes/default/kekule.css') }}" />
+
+    <script>
+        var target = `{{ mol }}`
+    </script>
+</head>
+<body>
+    <button onclick='alert(target)'>Click me!</button>
+</body>
+</html>
