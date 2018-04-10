@@ -35,6 +35,19 @@
     </script>
 </head>
 <body onload="init()">
-    <div id='2DChem' style='width:400px; height:300px' /><div id='3DChem' style='width:400px; height:300px' />
+    <div id='2DChem' style='width:600px; height:400px'>2D image:</div>
+    <div id='3DChem' style='width:600px; height:400px'>3D image:</div>
+    <table>
+        <th>Property</th><th>Predicted</th><th>Experimental</th>
+        {% for item in items %}
+        <tr>
+            <td>{% if item.link is defined %}
+                <a href='{{ item.link }}' target='_blank'>{{ item.cat }}</a>
+                {% else %}{{ item.cat }}{% endif %}</td>
+            <td>{{ item.pred }}</td>
+            <td>{{ item.exp }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 </body>
 </html>

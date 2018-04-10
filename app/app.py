@@ -67,7 +67,10 @@ def predict():
         abort(404, description="Required parameter is missing")
 
     mol = str(request.form['mol'])
-    return render_template('predict.html', mol=mol)
+    results = [{'link': 'https://en.wikipedia.org/wiki/Lipophilicity',
+                'cat': 'Lipophilicity', 'pred': '1.2', 'exp': 'Unknown', },
+                ]
+    return render_template('predict.html', mol=mol, items = results)
 
 @app.errorhandler(404)
 def page_not_found(error):
