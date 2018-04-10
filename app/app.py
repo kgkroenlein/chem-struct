@@ -68,7 +68,7 @@ def predict():
     if 'mol' not in request.form:
         abort(404, description="Required parameter is missing")
 
-    mol = MolFromMolBlock(str(request.form['mol']))
+    mol = Chem.MolFromMolBlock(str(request.form['mol']))
     AllChem.EmbedMolecule(mol,AllChem.ETKDG())
 
     pred, exp = lipo_model.predict(Chem.MolToMolBlock(mol))
