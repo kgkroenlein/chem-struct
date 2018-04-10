@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, jsonify, abort
 import psycopg2
 import os
+import lipo_model
 
 '''
 Initialize singleton global variables: App container and database connection
@@ -67,8 +68,9 @@ def predict():
         abort(404, description="Required parameter is missing")
 
     mol = str(request.form['mol'])
+    pred, exp = lipo_model.predict(mol)
     results = [{'link': 'https://en.wikipedia.org/wiki/Lipophilicity',
-                'cat': 'Lipophilicity', 'pred': '1.2', 'exp': 'Unknown', },
+                'cat': 'Lipophilicity', 'pred': pred, 'exp': exp, },
                 ]
     return render_template('predict.html', mol=mol, items = results)
 
