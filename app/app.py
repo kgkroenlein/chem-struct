@@ -69,14 +69,19 @@ def predict():
     if 'mol' not in request.form:
         abort(404, description="Required parameter is missing")
 
-    mol = Chem.MolFromMolBlock(str(request.form['mol']))
-    AllChem.EmbedMolecule(mol,AllChem.ETKDG())
+    ctab = str(request.form['mol'])
 
-    pred, exp = lipo_model.predict(Chem.MolToMolBlock(mol))
+    mol = Chem.MolFromMolBlock(ctab)
+    mol = Chem.AddHs(mol)
+    AllChem.EmbedMolecule(mol,AllChem.ETKDG())
+    mol = Chem.RemoveHs(mol)
+    ctab = Chem.MolToMolBlock(mol)
+
+    pred, exp = lipo_model.predict(ctab)
     results = [{'link': 'https://en.wikipedia.org/wiki/Lipophilicity',
                 'cat': 'Lipophilicity', 'pred': pred, 'exp': exp, },
                 ]
-    return render_template('predict.html', mol=mol, items = results)
+    return render_template('predict.html', mol=ctab, items = results)
 
 @app.errorhandler(404)
 def page_not_found(error):
