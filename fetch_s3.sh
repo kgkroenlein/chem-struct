@@ -25,5 +25,5 @@ curl https://s3.amazonaws.com/chem-struct-data/raphael.min.js > app/static/rapha
 curl https://s3.amazonaws.com/chem-struct-data/three.min.js > app/static/three.min.js
 
 cd app/static/
-unzip kekule.js.zip
+unzip kekule.zip
 cd "$(dirname "$0")"
