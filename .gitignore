@@ -107,3 +107,4 @@ data/*
 !data/ESOL.csv
 *.pkl
 app/static/kekule
+app/static/kekule.zip
