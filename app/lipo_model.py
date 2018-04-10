@@ -30,7 +30,7 @@ def predict(ctab, conn = None):
 
     cur = conn.cursor()
     cur.execute('SET rdkit.tanimoto_threshold TO 0.2')
-    cur.execute(sql,(smiles,))
+    cur.execute(sql,(ctab,))
     exp = None
     norm = 0
     summ = 0
