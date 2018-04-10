@@ -139,6 +139,7 @@ def closest():
         this['display'] = fp_display[fp_name]
         if fp_name in fp_url:
             this['url'] = fp_url[fp_name]
+        fp_meta += [this]
 
     return render_template('closest.html', rows = rows, main=search_cmp, fps = fp_meta)
 
