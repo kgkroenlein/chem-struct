@@ -71,11 +71,14 @@ def predict():
 
     ctab = str(request.form['mol'])
 
-    mol = Chem.MolFromMolBlock(ctab)
-    mol = Chem.AddHs(mol)
-    AllChem.EmbedMolecule(mol,AllChem.ETKDG())
-    mol = Chem.RemoveHs(mol)
-    ctab = Chem.MolToMolBlock(mol)
+    try: # Try structural optimization
+        mol = Chem.MolFromMolBlock(ctab)
+        mol = Chem.AddHs(mol)
+        AllChem.EmbedMolecule(mol,AllChem.ETKDG())
+        mol = Chem.RemoveHs(mol)
+        ctab = Chem.MolToMolBlock(mol)
+    except:
+        pass # Swallow the failure
 
     pred, exp = lipo_model.predict(ctab)
     results = [{'link': 'https://en.wikipedia.org/wiki/Lipophilicity',
