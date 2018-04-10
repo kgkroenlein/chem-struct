@@ -38,7 +38,7 @@
                                 alert('You have disconnected molecular fragments');
                                 return;
                             }
-                            post_to_url('/predict', {'mol':mols[0]});
+                            post_to_url('/predict', {'mol':Kekule.IO.saveFormatData(mols[0], 'mol')});
                          } };
             chemComposer
               .setEnableStyleToolbar(true)
