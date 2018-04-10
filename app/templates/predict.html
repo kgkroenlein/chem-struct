@@ -24,16 +24,17 @@
             chemViewer2D.setRenderType(Kekule.Render.RendererType.R2D);
             chemViewer2D.setMoleculeDisplayType(Kekule.Render.Molecule2DDisplayType.SKELETAL);
             chemViewer2D.setChemObj(molecule);
+            chemViewer2D.setEnableToolbar(true);
 
             var chemViewer3D = new Kekule.ChemWidget.Viewer(document.getElementById('3DChem'));
             chemViewer3D.setRenderType(Kekule.Render.RendererType.R3D);
-            chemViewer3D.setMoleculeDisplayType(Kekule.Render.Molecule3DDisplayType.SPACE_FILL);
+            chemViewer3D.setMoleculeDisplayType(Kekule.Render.Molecule3DDisplayType.BALL_STICK);
             chemViewer3D.setChemObj(molecule);
+            chemViewer3D.setEnableToolbar(true);
         }
     </script>
 </head>
 <body onload="init()">
-    <div id='2DChem' style='width:600px; height:400px' />
-    <div id='3DChem' style='width:600px; height:400px' />
+    <div id='2DChem' style='width:400px; height:300px' /><div id='3DChem' style='width:400px; height:300px' />
 </body>
 </html>
