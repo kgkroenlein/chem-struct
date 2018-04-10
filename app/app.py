@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, jsonify, abort
 import psycopg2
 import os
 import lipo_model
+from rdkit import Chem
 from rdkit.Chem import AllChem
 
 '''
