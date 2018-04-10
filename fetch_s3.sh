@@ -21,8 +21,8 @@ curl https://s3.amazonaws.com/chem-struct-data/Lipophilicity.csv > data/Lipophil
 # Pull in kekule libraries
 mkdir -p app/static
 curl https://s3.amazonaws.com/chem-struct-data/kekule.zip > app/static/kekule.zip
-curl https://s3.amazonaws.com/chem-struct-data/raphael.min.js > app/static/raphael.min.js
-curl https://s3.amazonaws.com/chem-struct-data/three.min.js > app/static/three.min.js
+curl https://s3.amazonaws.com/chem-struct-data/raphael-min.2.0.1.js > app/static/raphael-min.2.0.1.js
+curl https://s3.amazonaws.com/chem-struct-data/Three.js > app/static/Three.js
 
 cd app/static/
 unzip kekule.zip

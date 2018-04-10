@@ -110,4 +110,6 @@ app/static/kekule
 app/static/kekule.zip
 raphael.min.js
 three.min.js
+Three.js
+raphael-min.2.0.1.js
 
