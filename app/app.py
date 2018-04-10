@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, jsonify, abort
 import psycopg2
 import os
 import lipo_model
+from rdkit.Chem import AllChem
 
 '''
 Initialize singleton global variables: App container and database connection
@@ -67,8 +68,10 @@ def predict():
     if 'mol' not in request.form:
         abort(404, description="Required parameter is missing")
 
-    mol = str(request.form['mol'])
-    pred, exp = lipo_model.predict(mol)
+    mol = MolFromMolBlock(str(request.form['mol']))
+    AllChem.EmbedMolecule(mol,AllChem.ETKDG())
+
+    pred, exp = lipo_model.predict(Chem.MolToMolBlock(mol))
     results = [{'link': 'https://en.wikipedia.org/wiki/Lipophilicity',
                 'cat': 'Lipophilicity', 'pred': pred, 'exp': exp, },
                 ]
