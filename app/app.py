@@ -1,6 +1,7 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, abort
 import psycopg2
 import os
+import lipo_model
 
 '''
 Initialize singleton global variables: App container and database connection
@@ -53,6 +54,25 @@ def closest():
                   }]
 
     return render_template('closest.html', items = results, smiles=smiles)
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    '''
+    Returns a tabulated list of closest neighbors
+
+    Input, from composer widget on index page (thus required post)
+    smiles {str}: What SMILES to compare with; default is:
+                    'Cc1ccc2nc(-c3ccc(NC(C4N(C(c5cccs5)=O)CCC4)=O)cc3)sc2c1'
+    '''
+    if 'mol' not in request.form:
+        abort(404, description="Required parameter is missing")
+
+    mol = str(request.form['mol'])
+    pred, exp = lipo_model.predict(mol)
+    results = [{'link': 'https://en.wikipedia.org/wiki/Lipophilicity',
+                'cat': 'Lipophilicity', 'pred': pred, 'exp': exp, },
+                ]
+    return render_template('predict.html', mol=mol, items = results)
 
 @app.errorhandler(404)
 def page_not_found(error):

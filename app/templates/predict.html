@@ -1,0 +1,53 @@
+<html>
+<!DOCTYPE html>
+<html manifest1="chemEditor.manifest1">
+<head>
+	<meta charset="UTF-8">
+	<title>Chem-Struct</title>
+    <script src="{{ url_for('static', filename='raphael.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='three.min.js') }}"></script>
+    <script src="{{
+          url_for('static', filename='kekule/kekule.js') }}?modules=chemWidget,algorithm"></script>
+	<!--
+	<script src="../../../../src/kekule.js?modules=chemWidget,algorithm&min=false"></script>
+	-->
+	<link rel="stylesheet" type="text/css" href="{{
+          url_for('static', filename='kekule/themes/default/kekule.css') }}" />
+
+    <script>
+        var target = `{{ mol }}`;
+        var molecule = Kekule.IO.loadFormatData(target, 'mol');
+
+        function init()
+        {
+            var chemViewer2D = new Kekule.ChemWidget.Viewer(document.getElementById('2DChem'));
+            chemViewer2D.setRenderType(Kekule.Render.RendererType.R2D);
+            chemViewer2D.setMoleculeDisplayType(Kekule.Render.Molecule2DDisplayType.SKELETAL);
+            chemViewer2D.setChemObj(molecule);
+            chemViewer2D.setEnableToolbar(true);
+
+            var chemViewer3D = new Kekule.ChemWidget.Viewer(document.getElementById('3DChem'));
+            chemViewer3D.setRenderType(Kekule.Render.RendererType.R3D);
+            chemViewer3D.setMoleculeDisplayType(Kekule.Render.Molecule3DDisplayType.BALL_STICK);
+            chemViewer3D.setChemObj(molecule);
+            chemViewer3D.setEnableToolbar(true);
+        }
+    </script>
+</head>
+<body onload="init()">
+    <div id='2DChem' style='width:600px; height:400px'>2D image:</div>
+    <div id='3DChem' style='width:600px; height:400px'>3D image:</div>
+    <table>
+        <th>Property</th><th>Predicted</th><th>Experimental</th>
+        {% for item in items %}
+        <tr>
+            <td>{% if item.link is defined %}
+                <a href='{{ item.link }}' target='_blank'>{{ item.cat }}</a>
+                {% else %}{{ item.cat }}{% endif %}</td>
+            <td>{% if item.pred is none %}Unknown{% else %}{{ item.pred }}{% endif %}</td>
+            <td>{% if item.exp is none %}Unknown{% else %}{{ item.exp }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
