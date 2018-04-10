@@ -4,6 +4,8 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Chem-Struct</title>
+    <script src="{{ url_for('static', filename='raphael.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='three.min.js') }}"></script>
     <script src="{{
           url_for('static', filename='kekule/kekule.js') }}?modules=chemWidget,algorithm"></script>
 	<!--
@@ -13,10 +15,25 @@
           url_for('static', filename='kekule/themes/default/kekule.css') }}" />
 
     <script>
-        var target = `{{ mol }}`
+        var target = `{{ mol }}`;
+        var molecule = Kekule.IO.loadFormatData(target, 'mol');
+
+        function init()
+        {
+            var chemViewer2D = new Kekule.ChemWidget.Viewer(document.getElementById('2DChem'));
+            chemViewer2D.setRenderType(Kekule.Render.RendererType.R2D);
+            chemViewer2D.setMoleculeDisplayType(Kekule.Render.Molecule2DDisplayType.SKELETAL);
+            chemViewer2D.setChemObj(molecule);
+
+            var chemViewer3D = new Kekule.ChemWidget.Viewer(document.getElementById('3DChem'));
+            chemViewer3D.setRenderType(Kekule.Render.RendererType.R3D);
+            chemViewer3D.setMoleculeDisplayType(Kekule.Render.Molecule3DDisplayType.SPACE_FILL);
+            chemViewer3D.setChemObj(molecule);
+        }
     </script>
 </head>
-<body>
-    <button onclick='alert(target)'>Click me!</button>
+<body onload="init()">
+    <div id='2DChem' style='width:600px; height:400px' />
+    <div id='3DChem' style='width:600px; height:400px' />
 </body>
 </html>

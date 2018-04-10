@@ -108,3 +108,6 @@ data/*
 *.pkl
 app/static/kekule
 app/static/kekule.zip
+raphael.min.js
+three.min.js
+
