@@ -98,7 +98,7 @@ def closest():
         while True:
             n_cur = conn.cursor()
             neighbor_sql = neighbor_sql_tmpl.format( fp_name,
-                                fp_methods[fp_name], mol, fp_name, fp_name, n )
+                                fp_methods[fp_name], fp_name, fp_name, n )
             base_cur.execute(neighbor_sql)
             n_cur = conn.cursor()
             n_cur.execute('EXECUTE neighbor_plan (%s)', (mol,))
@@ -120,9 +120,27 @@ def closest():
         if tol != 0.5:
             tol = 0.5
             base_cur.execute(default_tol_sql)
-            base_cur.execute('DEALLOCATE neighbor_plan')
 
-    return render_template('closest.html', rows = rows, main=search_cmp)
+        base_cur.execute('DEALLOCATE neighbor_plan')
+
+    fp_display = {
+        'mfp2': 'Morgan',
+        'ffp2': 'Morgan-Feature',
+        'rdkitbv': 'Daylight',
+        'atompair': 'Atom Pair',
+        'torsionbv': 'Torsion',
+        'maccs': 'MACCS',
+    }
+    fp_url = dict()
+    fp_meta = []
+    for fp_name in fp_names:
+        this = dict()
+        this['name'] = fp_name
+        this['display'] = fp_display[fp_name]
+        if fp_name in fp_url:
+            this['url'] = fp_url[fp_name]
+
+    return render_template('closest.html', rows = rows, main=search_cmp, fps = fp_meta)
 
 @app.route('/predict', methods=['POST'])
 def predict():
