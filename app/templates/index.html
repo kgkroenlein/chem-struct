@@ -15,13 +15,43 @@
 	<script>
 
 		var chemEditor;
-		var chemComposer
+		var chemComposer;
+
 		function init()
 		{
 			var elem = document.getElementById('composer');
 			var chemEditor = new Kekule.Editor.ChemSpaceEditor(document, null, Kekule.Render.RendererType.R2D);
 			chemComposer = new Kekule.Editor.Composer(elem, chemEditor);
-            chemComposer.setPredefinedSetting('fullFunc');
+            cmpListBtn = {'text': 'Sample Structures', 'buttonKind': 'K-Kind-DropDown',
+                         'cssText': 'width:auto', 'showText': true,
+                         '#execute': function(){
+                             alert('Figure out how to populate a list');
+                         } };
+             // composer.setChemObj(molecule);
+            searchBtn = {'text': 'Analyze', 'buttonKind': 'K-Kind-Search',
+                         'cssText': 'width:auto', 'showText': true,
+                         '#execute': function(){
+                             // Get all molecules inside editor
+                            var mols = chemComposer.exportObjs(Kekule.Molecule);
+                            if (mols.length > 1)
+                            {
+                                alert('You have disconnected molecular fragments');
+                                return;
+                            }
+                            post_to_url('/predict', {'mol':mols[0]});
+                         } };
+            chemComposer
+              .setEnableStyleToolbar(true)
+              .setEnableOperHistory(true)
+              .setEnableLoadNewFile(true)
+              .setEnableCreateNewDoc(true)
+              .setAllowCreateNewChild(true)
+              .setCommonToolButtons(['newDoc', 'loadData', 'saveData', 'undo', 'redo', 'copy', 'cut', 'paste',
+                'zoomIn', 'reset', 'zoomOut', 'config', 'objInspector', cmpListBtn, searchBtn])
+              .setChemToolButtons(['manipulate', 'erase', 'bond', 'atom', 'formula',
+                'ring', 'charge'])   // create only chem tool buttons related to molecule
+              .setStyleToolComponentNames(['fontName', 'fontSize', 'color',
+                'textDirection', 'textAlign']);  // create all default style components
 
 			// adjust size
 			adjustSize();
@@ -33,7 +63,26 @@
 			var dim = Kekule.HtmlElementUtils.getViewportDimension(document);
 			chemComposer.setWidth(dim.width - 50 + 'px').setHeight(dim.height - 200 + 'px');
 		}
+        function post_to_url(path, params) {
+            // Lifted from https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
+            var form = document.createElement("form");
+            form.setAttribute("method", "post");
+            form.setAttribute("action", path);
 
+            for(var key in params) {
+                if(params.hasOwnProperty(key)) {
+                    var hiddenField = document.createElement("input");
+                    hiddenField.setAttribute("type", "hidden");
+                    hiddenField.setAttribute("name", key);
+                    hiddenField.setAttribute("value", params[key]);
+
+                    form.appendChild(hiddenField);
+                }
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
 		Kekule.X.domReady(init);
 	</script>
 </head>
