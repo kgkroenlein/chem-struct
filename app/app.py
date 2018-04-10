@@ -48,7 +48,7 @@ def closest():
 
         base_cur.execute(sql, (regno,))
         mol   = None
-        for (molfile,) in cur:
+        for (molfile,) in base_cur:
             mol = molfile
 
     else:
@@ -66,13 +66,16 @@ def closest():
     default_tol_sql = 'SET rdkit.tanimoto_threshold TO DEFAULT;'
     tol_sql = 'SET rdkit.tanimoto_threshold TO %s'
 
+    # Prepare statment is necessary because a normal psycopg2 placeholder gets
+    # confused by all the percents, I think
     neighbor_sql_tmpl = '''
-    SELECT  fp2.molregno AS molregno,
+    PREPARE neighbor_plan AS
+    SELECT  fps.molregno AS molregno,
             tanimoto_sml(target, fps.{}) AS similarity,
             compound_structures.molfile AS molfile
     FROM    rdk.fps,
             compound_structures,
-            {}(mol_from_ctab(%s)) AS target
+            {}(mol_from_ctab($1)) AS target
     WHERE   target%fps.{}
       AND   fps.molregno = compound_structures.molregno
     ORDER BY target<%>fps.{}
@@ -89,24 +92,24 @@ def closest():
     }
     fp_names = ('mfp2', 'ffp2', 'rdkitbv', 'atompair', 'torsionbv', 'maccs')
 
-    rows = [[]]*n
+    rows = [dict()]*n
     for fp_name in fp_names:
-        base_cur.execute()
-
         tol = 0.5
         while True:
             n_cur = conn.cursor()
             neighbor_sql = neighbor_sql_tmpl.format( fp_name,
-                                fp_methods[fp_methods], fp_name, fp_name, n )
-            n_cur.execute(neighbor_sql, (id,))
+                                fp_methods[fp_name], mol, fp_name, fp_name, n )
+            base_cur.execute(neighbor_sql)
+            n_cur = conn.cursor()
+            n_cur.execute('EXECUTE neighbor_plan (%s)', (mol,))
             for i, (n_id, similarity, molfile) in enumerate(n_cur):
-                rows[i] = {  'regno':n_id,
-                                'similarity':similarity,
-                                'molfile':molfile
-                              }
+                rows[i][fp_name] = {'regno':n_id,
+                                    'similarity':similarity,
+                                    'molfile':molfile
+                                    }
 
             # Did we get enough?
-            if len(result[fp_name][id]) >= n:
+            if i+1 == n:
                 break
 
             # Lower the threshold and try again
@@ -117,6 +120,7 @@ def closest():
         if tol != 0.5:
             tol = 0.5
             base_cur.execute(default_tol_sql)
+            base_cur.execute('DEALLOCATE neighbor_plan')
 
     return render_template('closest.html', rows = rows, main=search_cmp)
 
