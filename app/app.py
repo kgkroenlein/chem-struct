@@ -4,6 +4,7 @@ import os
 import lipo_model
 from rdkit import Chem
 from rdkit.Chem import AllChem
+from collections import OrderedDict
 
 '''
 Initialize singleton global variables: App container and database connection
@@ -31,31 +32,93 @@ def closest():
     smiles {str}: What SMILES to compare with; default is:
                     'Cc1ccc2nc(-c3ccc(NC(C4N(C(c5cccs5)=O)CCC4)=O)cc3)sc2c1'
     '''
-    if 'smiles' in request.form:
-        smiles = str(request.form['smiles'])
-    else:
-        smiles = 'Cc1ccc2nc(-c3ccc(NC(C4N(C(c5cccs5)=O)CCC4)=O)cc3)sc2c1'
+    n = 10
 
-    sql = '''
-    SELECT  md.pref_name,
-            func.m,
-            func.similarity
-    FROM    get_mfp2_neighbors(%s) AS func
-        JOIN molecule_dictionary AS md
-        ON   md.molregno=func.molregno
-    LIMIT   30;
+    base_cur = conn.cursor()
+    if request.method == 'GET':
+        if 'regno' not in request.args:
+            abort(404, description="Required parameter is missing")
+
+        regno = str(request.args['regno'])
+        sql = '''
+        SELECT  molfile
+        FROM    compound_structures
+        WHERE   molregno = %s
+        '''
+
+        base_cur.execute(sql, (regno,))
+        mol   = None
+        for (molfile,) in cur:
+            mol = molfile
+
+    else:
+        if 'mol' not in request.form:
+            abort(404, description="Required parameter is missing")
+
+        mol = str(request.form['mol'])
+        regno = None
+
+    if not mol:
+        abort(500, description="Server failed to identify a structure")
+
+    search_cmp = {'molfile' : mol, 'regno' : regno}
+
+    default_tol_sql = 'SET rdkit.tanimoto_threshold TO DEFAULT;'
+    tol_sql = 'SET rdkit.tanimoto_threshold TO %s'
+
+    neighbor_sql_tmpl = '''
+    SELECT  fp2.molregno AS molregno,
+            tanimoto_sml(target, fps.{}) AS similarity,
+            compound_structures.molfile AS molfile
+    FROM    rdk.fps,
+            compound_structures,
+            {}(mol_from_ctab(%s)) AS target
+    WHERE   target%fps.{}
+      AND   fps.molregno = compound_structures.molregno
+    ORDER BY target<%>fps.{}
+    LIMIT   {}
     '''
 
-    cur = conn.cursor()
-    cur.execute(sql, (smiles,))
-    results = []
-    for row in cur:
-        results += [{'name': row[0],
-                     'smiles': row[1],
-                     'similarity': row[2],
-                  }]
+    fp_methods = {
+        'mfp2': 'morganbv_fp',
+        'ffp2': 'featmorganbv_fp',
+        'rdkitbv': 'rdkit_fp',
+        'atompair': 'atompairbv_fp',
+        'torsionbv': 'torsionbv_fp',
+        'maccs': 'maccs_fp',
+    }
+    fp_names = ('mfp2', 'ffp2', 'rdkitbv', 'atompair', 'torsionbv', 'maccs')
 
-    return render_template('closest.html', items = results, smiles=smiles)
+    rows = [[]]*n
+    for fp_name in fp_names:
+        base_cur.execute()
+
+        tol = 0.5
+        while True:
+            n_cur = conn.cursor()
+            neighbor_sql = neighbor_sql_tmpl.format( fp_name,
+                                fp_methods[fp_methods], fp_name, fp_name, n )
+            n_cur.execute(neighbor_sql, (id,))
+            for i, (n_id, similarity, molfile) in enumerate(n_cur):
+                rows[i] = {  'regno':n_id,
+                                'similarity':similarity,
+                                'molfile':molfile
+                              }
+
+            # Did we get enough?
+            if len(result[fp_name][id]) >= n:
+                break
+
+            # Lower the threshold and try again
+            tol /= 2
+            base_cur.execute(tol_sql, (tol,))
+
+        # Reset tolerance if it changed
+        if tol != 0.5:
+            tol = 0.5
+            base_cur.execute(default_tol_sql)
+
+    return render_template('closest.html', rows = rows, main=search_cmp)
 
 @app.route('/predict', methods=['POST'])
 def predict():

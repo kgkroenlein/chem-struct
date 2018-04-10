@@ -44,8 +44,8 @@
             <td>{% if item.link is defined %}
                 <a href='{{ item.link }}' target='_blank'>{{ item.cat }}</a>
                 {% else %}{{ item.cat }}{% endif %}</td>
-            <td>{% if item.pred is none %}Unknown{% else %}{{ item.pred }}{% endif %}</td>
-            <td>{% if item.exp is none %}Unknown{% else %}{{ item.exp }}{% endif %}</td>
+            <td>{% if item.pred is none %}Not available{% else %}{{ item.pred }}{% endif %}</td>
+            <td>{% if item.exp is none %}Not available{% else %}{{ item.exp }}{% endif %}</td>
         </tr>
         {% endfor %}
     </table>

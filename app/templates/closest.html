@@ -1,18 +1,18 @@
 <html>
     <head>
         <style>
-        #candidates {
+        #neighbors {
             font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
             border-collapse: collapse;
             width: 100%;
         }
-        #candidates td, #candidates th {
+        #neighbors td, #neighbors th {
             border: 1px solid #ddd;
             padding: 8px;
         }
-        #candidates tr:nth-child(even){background-color: #f2f2f2;}
-        #candidates tr:hover {background-color: #ddd;}
-        #candidates th {
+        #neighbors tr:nth-child(even){background-color: #f2f2f2;}
+        #neighbors tr:hover {background-color: #ddd;}
+        #neighbors th {
             padding-top: 12px;
             padding-bottom: 12px;
             text-align: left;
@@ -20,19 +20,39 @@
             color: white;
         }
         </style>
+        <script name="main_mol" id="main_mol" type="chemical/x-mdl-molfile">
+{{  main.molfile  }}
+	    </script>
+{% for fp in fps %}
+    {% for row in rows %}
+        <script name="mol_{{fp.name}}_{{loop.index}}" id="mol_{{fp.name}}_{{loop.index}}" type="chemical/x-mdl-molfile">
+{{  row[fp.name].molfile  }}
+        </script>
+    {% endfor %}
+{% endfor %}
     <head>
     <body>
-        <form action="/closest" method='POST'  id = 'cmp_search'>
-            <input type="text" name="smiles" value="{{smiles}}" />
-            <input type="submit" />
-        </form>
-        <table id=candidates>
-        <TH>Common Name</TH><TH>SMILES</TH><TH>Similarity</TH>
-        {% for item in items %}
+<!-- INSERT inital compound -->
+
+<div id="chemViewer" style="width:600px;height:400px"
+			 data-widget="Kekule.ChemWidget.Viewer3D" data-enable-toolbar="true" data-auto-size="false" data-padding="20"
+			 data-toolbar-evoke-modes="[0]"
+			 data-chem-obj="url(#main_mol)">Parent compound:</div>
+
+        <h4>Near neighbors, by fingerprint type:</h4>
+
+        <table id=neighbors>
+        {% for fp in fps %}
+        <TH>{% if fp.url is none %}{{ fp.display }}{% else %}<a href='{{ fp.url }}'>{{ fp.display }}</a>{% endif %}</TH>
+        {% endfor %}
+        {% for row in rows %}
         <TR>
-           <TD class="c2">{{item.name}}</TD>
-           <TD class="c4"><SPAN>{{item.smiles}}</SPAN></TD>
-           <TD class="c5"><SPAN>{{item.similarity}}</SPAN></TD>
+           {% for fp in fps %}
+           <TD>{% if row[fp.name] is not none %}
+               <a href = '/predict?regno={{ row[fp.name].regno }}'><div style="" data-widget="Kekule.ChemWidget.Viewer2D"
+                 data-chem-obj="url(#mol_{{fp.name}}_{{loop.index}})" data-predefined-setting="static" data-auto-size="true">{{ row[fp.name].similarity }}</div></a>
+           {% endif %}</TD>
+           {% endfor %}
         </TR>
         {% endfor %}
         </table>
