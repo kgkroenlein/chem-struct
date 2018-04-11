@@ -108,7 +108,7 @@ def closest():
                                     }
 
             # Did we get enough?
-            if 'regno' in rows[-1]:
+            if fp_name in rows[-1]:
                 success = True
                 break
 
