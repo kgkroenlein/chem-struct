@@ -32,11 +32,39 @@
             chemViewer3D.setChemObj(molecule);
             chemViewer3D.setEnableToolbar(true);
         }
+
+        function post_to_url(path, params) {
+            // Lifted from https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
+            var form = document.createElement("form");
+            form.setAttribute("method", "post");
+            form.setAttribute("action", path);
+
+            for(var key in params) {
+                if(params.hasOwnProperty(key)) {
+                    var hiddenField = document.createElement("input");
+                    hiddenField.setAttribute("type", "hidden");
+                    hiddenField.setAttribute("name", key);
+                    hiddenField.setAttribute("value", params[key]);
+
+                    form.appendChild(hiddenField);
+                }
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
     </script>
 </head>
 <body onload="init()">
     <div id='2DChem' style='width:600px; height:400px'>2D image:</div>
     <div id='3DChem' style='width:600px; height:400px'>3D image:</div>
+
+    {% if regno is defined %}
+    <a href="#" onclick="post_to_url('/closest',{'mol':target});return false;">k-Nearest neighbors</a>
+    {% else %}
+    <a href="/closest?regno={{ regno }}" >k-Nearest neighbors</a>
+    {% endif %}
+
     <table>
         <th>Property</th><th>Predicted</th><th>Experimental</th>
         {% for item in items %}

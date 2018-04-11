@@ -143,7 +143,7 @@ def closest():
 
     return render_template('closest.html', rows = rows, main=search_cmp, fps = fp_meta)
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['GET', 'POST'])
 def predict():
     '''
     Returns a tabulated list of closest neighbors
@@ -152,25 +152,48 @@ def predict():
     smiles {str}: What SMILES to compare with; default is:
                     'Cc1ccc2nc(-c3ccc(NC(C4N(C(c5cccs5)=O)CCC4)=O)cc3)sc2c1'
     '''
-    if 'mol' not in request.form:
-        abort(404, description="Required parameter is missing")
+    if request.method == 'GET':
+        if 'regno' not in request.args:
+            abort(404, description="Required parameter is missing")
 
-    ctab = str(request.form['mol'])
+        regno = str(request.args['regno'])
+        sql = '''
+        SELECT  molfile
+        FROM    compound_structures
+        WHERE   molregno = %s
+        '''
 
-    try: # Try structural optimization
-        mol = Chem.MolFromMolBlock(ctab)
-        mol = Chem.AddHs(mol)
-        AllChem.EmbedMolecule(mol,AllChem.ETKDG())
-        mol = Chem.RemoveHs(mol)
-        ctab = Chem.MolToMolBlock(mol)
-    except:
-        pass # Swallow the failure
+        base_cur.execute(sql, (regno,))
+        ctab = None
+        for (molfile,) in base_cur:
+            ctab = molfile
+
+    else:
+        if 'mol' not in request.form:
+            abort(404, description="Required parameter is missing")
+
+        ctab = str(request.form['mol'])
+        regno = None
+
+        try: # Try structural optimization
+            mol = Chem.MolFromMolBlock(ctab)
+            mol = Chem.AddHs(mol)
+            AllChem.EmbedMolecule(mol,AllChem.ETKDG())
+            mol = Chem.RemoveHs(mol)
+            ctab = Chem.MolToMolBlock(mol)
+        except:
+            pass # Swallow the failure
+
+    if not ctab:
+        abort(500, description="Server failed to identify a structure")
 
     pred, exp = lipo_model.predict(ctab)
     results = [{'link': 'https://en.wikipedia.org/wiki/Lipophilicity',
                 'cat': 'Lipophilicity', 'pred': pred, 'exp': exp, },
                 ]
-    return render_template('predict.html', mol=ctab, items = results)
+    return render_template('predict.html', mol = ctab, items = results,
+                            regno = regno
+                            )
 
 @app.errorhandler(404)
 def page_not_found(error):
