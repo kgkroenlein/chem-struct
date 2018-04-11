@@ -56,14 +56,16 @@
     </script>
 </head>
 <body onload="init()">
-    <div id='2DChem' style='width:600px; height:400px'>2D image:</div>
-    <div id='3DChem' style='width:600px; height:400px'>3D image:</div>
+    <div id='2DChem' style='width:600px; height:400px'></div>
+    <div id='3DChem' style='width:600px; height:400px'></div>
     <br />
-    {% if regno is none %}
-    <a href="#" onclick="post_to_url('/closest',{'mol':target});return false;">k-Nearest neighbors</a>
-    {% else %}
-    <a href="/closest?regno={{ regno }}" >k-Nearest neighbors</a>
-    {% endif %}
+    <h3>
+        {% if regno is none %}
+        <a href="#" onclick="post_to_url('/closest',{'mol':target});return false;">k-Nearest neighbors</a>
+        {% else %}
+        <a href="/closest?regno={{ regno }}" >k-Nearest neighbors</a>
+        {% endif %}
+    </h3>
 
     <table>
         <th>Property</th><th>Predicted</th><th>Experimental</th>
