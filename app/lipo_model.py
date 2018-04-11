@@ -90,8 +90,8 @@ def predict(ctab, conn = None):
         attempt = np.zeros([2*n,])
         while True:
             n_cur = conn.cursor()
-            n_cur.execute('EXECUTE neighbor_plan (%s)', (mol,))
-            for (value, similarity) in n_cur:
+            n_cur.execute('EXECUTE neighbor_plan (%s)', (ctab,))
+            for i, (value, similarity) in enumerate(n_cur):
                 attempt[2*i]   = similarity
                 attempt[2*i+1] = value
 
