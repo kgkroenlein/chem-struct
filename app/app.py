@@ -93,11 +93,11 @@ def closest():
     rows = [{'n':i+1} for i in range(n)]
     for fp_name in fp_names:
         tol = 0.5
+        neighbor_sql = neighbor_sql_tmpl.format( fp_name,
+                            fp_methods[fp_name], fp_name, fp_name, n )
+        base_cur.execute(neighbor_sql)
+
         while True:
-            n_cur = conn.cursor()
-            neighbor_sql = neighbor_sql_tmpl.format( fp_name,
-                                fp_methods[fp_name], fp_name, fp_name, n )
-            base_cur.execute(neighbor_sql)
             n_cur = conn.cursor()
             n_cur.execute('EXECUTE neighbor_plan (%s)', (mol,))
             for i, (n_id, similarity, molfile) in enumerate(n_cur):
