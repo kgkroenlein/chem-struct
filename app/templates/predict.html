@@ -33,6 +33,10 @@
             chemViewer3D.setEnableToolbar(true);
         }
 
+        submitMol() {
+            post_to_url('/closest',{'mol':target})
+        }
+
         function post_to_url(path, params) {
             // Lifted from https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
             var form = document.createElement("form");
@@ -61,7 +65,7 @@
     <br />
     <h3>
         {% if regno is none %}
-        <a href="#" onclick="post_to_url('/closest',{'mol':target});return false;">k-Nearest neighbors</a>
+        <a href="#" onclick="submitMol();return false;">k-Nearest neighbors</a>
         {% else %}
         <a href="/closest?regno={{ regno }}" >k-Nearest neighbors</a>
         {% endif %}
