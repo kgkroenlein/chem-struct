@@ -97,7 +97,8 @@ def closest():
                             fp_methods[fp_name], fp_name, fp_name, n )
         base_cur.execute(neighbor_sql)
 
-        while True:
+        success = False
+        for _ in range(10):
             n_cur = conn.cursor()
             n_cur.execute('EXECUTE neighbor_plan (%s)', (mol,))
             for i, (n_id, similarity, molfile) in enumerate(n_cur):
@@ -107,7 +108,8 @@ def closest():
                                     }
 
             # Did we get enough?
-            if i+1 == n:
+            if 'regno' in rows[-1]:
+                success = True
                 break
 
             # Lower the threshold and try again
@@ -115,6 +117,9 @@ def closest():
             base_cur.execute(tol_sql, (tol,))
 
         # Reset tolerance if it changed
+        if not success:
+            abort(500, description="Failed to identify neighbors")
+
         if tol != 0.5:
             tol = 0.5
             base_cur.execute(default_tol_sql)
