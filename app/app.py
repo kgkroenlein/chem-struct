@@ -5,16 +5,12 @@ import lipo_model
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from collections import OrderedDict
+from util import aws_context_db
 
 '''
 Initialize singleton global variables: App container and database connection
 '''
 app = Flask(__name__)
-conn = psycopg2.connect(database='chemstruct',
-                        user='postgres',
-                        host=os.environ['DB_PORT_5432_TCP_ADDR'],
-                        port=os.environ['DB_PORT_5432_TCP_PORT'],
-                        )
 
 @app.route('/', methods=['GET'])
 def index():
@@ -33,6 +29,8 @@ def closest():
                     'Cc1ccc2nc(-c3ccc(NC(C4N(C(c5cccs5)=O)CCC4)=O)cc3)sc2c1'
     '''
     n = 10
+
+    conn = aws_context_db()
 
     base_cur = conn.cursor()
     if request.method == 'GET':
@@ -152,6 +150,9 @@ def predict():
     smiles {str}: What SMILES to compare with; default is:
                     'Cc1ccc2nc(-c3ccc(NC(C4N(C(c5cccs5)=O)CCC4)=O)cc3)sc2c1'
     '''
+
+    conn = aws_context_db()
+
     base_cur = conn.cursor()
     if request.method == 'GET':
         if 'regno' not in request.args:
