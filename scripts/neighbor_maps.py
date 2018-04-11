@@ -42,13 +42,14 @@ def gather_near_neighbors(n = 15, conn = None, output=False,
     tol_sql = 'SET rdkit.tanimoto_threshold TO %s'
 
     neighbor_sql_tmpl = '''
-    PREPARE neighbor_plan AS
+    PREPARE {}_neighbor_plan AS
     SELECT  fp2.molregno AS molregno,
             tanimoto_sml(fp1.{}, fp2.{}) AS similarity
     FROM    lipophilicity t2,
             rdk.fps fp1,
             rdk.fps fp2
     WHERE   fp1.molregno = $1
+      AND   fp1.molregno <> fp2.molregno
       AND   fp2.molregno = t2.molregno
       AND   fp1.{}%fp2.{}
     ORDER BY fp1.{}<%>fp2.{}
@@ -61,7 +62,7 @@ def gather_near_neighbors(n = 15, conn = None, output=False,
             print('Starting ', fp_name)
 
         base_cur = conn.cursor() # Reused cursor
-        base_cur.execute(neighbor_sql_tmpl.format( *(fp_name,)*6, n ))
+        base_cur.execute(neighbor_sql_tmpl.format( *(fp_name,)*7, n ))
 
         cmp_cur = conn.cursor() # Cursor for getting compound list
         cmp_cur.execute(compound_sql.format(fp_name))
@@ -71,7 +72,8 @@ def gather_near_neighbors(n = 15, conn = None, output=False,
                 print('Compound {:4.0f}:{}'.format(i,id))
             while True:
                 n_cur = conn.cursor()
-                n_cur.execute('EXECUTE neighbor_plan (%s)', (id,))
+                n_cur.execute('EXECUTE {}_neighbor_plan (%s)'.format(fp_name),
+                              (id,))
                 for (n_id, similarity) in n_cur:
                     result[fp_name][id][n_id] = similarity
 
