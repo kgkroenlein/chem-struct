@@ -113,6 +113,8 @@ def predict(ctab, conn = None):
         X += list(attempt)
         base_cur.execute('DEALLOCATE neighbor_plan')
 
+    pred = model.predict(np.array(X).reshape(1, -1))
+
     # If all fingerprints gave a sim=1, then we matched
     if len(highest) == len(fp_names):
         exp = highest[0]
