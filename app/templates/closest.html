@@ -43,11 +43,11 @@
         			 data-toolbar-evoke-modes="[0]"
         			 data-chem-obj="url(#main_mol)">Parent compound:</div>
 
-        <h4>Near neighbors, by fingerprint type:</h4>
+        <h3>Near neighbors, by fingerprint type:</h3>
 
         <table id=neighbors>
         {% for fp in fps %}
-        <TH>{% if fp.url is none %}{{ fp.display }}{% else %}<a href='{{ fp.url }}'>{{ fp.display }}</a>{% endif %}</TH>
+        <TH>{% if fp.url is defined %}<a href='{{ fp.url }}'>{{ fp.display }}</a>{% else %}{{ fp.display }}{% endif %}</TH>
         {% endfor %}
         {% for row in rows %}
         <TR>
