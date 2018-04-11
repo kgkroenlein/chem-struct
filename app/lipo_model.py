@@ -21,7 +21,7 @@ def predict(ctab, conn = None):
 
 
     """
-    model = load_data('model.pkl')
+    model = load_data('app/model.pkl')
     n = 5
     if not conn:
         from util import aws_context_db
@@ -58,22 +58,22 @@ def predict(ctab, conn = None):
 
     fp_derived = dict()
     tmp_cur =  conn.cursor()
-    tmp_cur.execute('SELECT target FROM morganbv_fp(mol_from_ctab(%s))', (ctab,))
+    tmp_cur.execute('SELECT target FROM morganbv_fp(mol_from_ctab(%s)) AS target', (ctab,))
     for (target,) in tmp_cur:
         fp_derived['mfp2'] = fp2bits(target)
-    tmp_cur.execute('SELECT target FROM featmorganbv_fp(mol_from_ctab(%s))', (ctab,))
+    tmp_cur.execute('SELECT target FROM featmorganbv_fp(mol_from_ctab(%s)) AS target', (ctab,))
     for (target,) in tmp_cur:
         fp_derived['ffp2'] = fp2bits(target)
-    tmp_cur.execute('SELECT target FROM rdkit_fp(mol_from_ctab(%s))', (ctab,))
+    tmp_cur.execute('SELECT target FROM rdkit_fp(mol_from_ctab(%s)) AS target', (ctab,))
     for (target,) in tmp_cur:
         fp_derived['rdkitbv'] = fp2bits(target)
-    tmp_cur.execute('SELECT target FROM atompairbv_fp(mol_from_ctab(%s))', (ctab,))
+    tmp_cur.execute('SELECT target FROM atompairbv_fp(mol_from_ctab(%s)) AS target', (ctab,))
     for (target,) in tmp_cur:
         fp_derived['atompair'] = fp2bits(target)
-    tmp_cur.execute('SELECT target FROM torsionbv_fp(mol_from_ctab(%s))', (ctab,))
+    tmp_cur.execute('SELECT target FROM torsionbv_fp(mol_from_ctab(%s)) AS target', (ctab,))
     for (target,) in tmp_cur:
         fp_derived['torsionbv'] = fp2bits(target)
-    tmp_cur.execute('SELECT target FROM maccs_fp(mol_from_ctab(%s))', (ctab,))
+    tmp_cur.execute('SELECT target FROM maccs_fp(mol_from_ctab(%s)) AS target', (ctab,))
     for (target,) in tmp_cur:
         fp_derived['maccs'] = fp2bits(target)
 
