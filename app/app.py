@@ -92,7 +92,7 @@ def closest():
     }
     fp_names = ('mfp2', 'ffp2', 'rdkitbv', 'atompair', 'torsionbv', 'maccs')
 
-    rows = [dict()]*n
+    rows = [dict('n':i+1) for i in range(n)]
     for fp_name in fp_names:
         tol = 0.5
         while True:
