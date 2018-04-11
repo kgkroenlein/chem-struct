@@ -3,6 +3,13 @@ from collections import defaultdict
 from util import aws_context_db, load_data
 from sklearn.ensemble import RandomForestRegressor
 from rdkit.Chem import AllChem
+from rdkit import DataStructs
+
+def fp2bits(fp):
+    ebv = DataStructs.cDataStructs.CreateFromBitString(fp)
+    stash = np.zeros((1,))
+    DataStructs.ConvertToNumpyArray(ebv, stash)
+    return stash
 
 def predict(ctab, conn = None):
     """
@@ -53,43 +60,43 @@ def predict(ctab, conn = None):
     tmp_cur =  conn.cursor()
     tmp_cur.execute('SELECT target FROM morganbv_fp(mol_from_ctab(%s))', (ctab,))
     for (target,) in tmp_cur:
-        fp_derived['mfp2'] = target
+        fp_derived['mfp2'] = fp2bits(target)
     tmp_cur.execute('SELECT target FROM featmorganbv_fp(mol_from_ctab(%s))', (ctab,))
     for (target,) in tmp_cur:
-        fp_derived['ffp2'] = target
+        fp_derived['ffp2'] = fp2bits(target)
     tmp_cur.execute('SELECT target FROM rdkit_fp(mol_from_ctab(%s))', (ctab,))
     for (target,) in tmp_cur:
-        fp_derived['rdkitbv'] = target
+        fp_derived['rdkitbv'] = fp2bits(target)
     tmp_cur.execute('SELECT target FROM atompairbv_fp(mol_from_ctab(%s))', (ctab,))
     for (target,) in tmp_cur:
-        fp_derived['atompair'] = target
+        fp_derived['atompair'] = fp2bits(target)
     tmp_cur.execute('SELECT target FROM torsionbv_fp(mol_from_ctab(%s))', (ctab,))
     for (target,) in tmp_cur:
-        fp_derived['torsionbv'] = target
+        fp_derived['torsionbv'] = fp2bits(target)
     tmp_cur.execute('SELECT target FROM maccs_fp(mol_from_ctab(%s))', (ctab,))
     for (target,) in tmp_cur:
-        fp_derived['maccs'] = target
+        fp_derived['maccs'] = fp2bits(target)
 
     X = []
+    highest = []
     for fp_name in fp_names:
-
+        X += list(fp_derived[fp_name])
 
         tol = 0.5
         neighbor_sql = neighbor_sql_tmpl.format( fp_name,
                             fp_methods[fp_name], fp_name, fp_name, n )
         base_cur.execute(neighbor_sql)
 
+        attempt = np.zeros([2*n,])
         while True:
             n_cur = conn.cursor()
             n_cur.execute('EXECUTE neighbor_plan (%s)', (mol,))
-            for i, (n_id, similarity, molfile) in enumerate(n_cur):
-                rows[i][fp_name] = {'regno':n_id,
-                                    'similarity':similarity,
-                                    'molfile':molfile
-                                    }
+            for (value, similarity) in n_cur:
+                attempt[2*i]   = similarity
+                attempt[2*i+1] = value
 
             # Did we get enough?
-            if i+1 == n:
+            if attempt[-2] != 0:
                 break
 
             # Lower the threshold and try again
@@ -101,21 +108,17 @@ def predict(ctab, conn = None):
             tol = 0.5
             base_cur.execute(default_tol_sql)
 
+        if attempt[0] == 1:
+            highest += [attempt[1]]
+        X += list(attempt)
         base_cur.execute('DEALLOCATE neighbor_plan')
 
+    # If all fingerprints gave a sim=1, then we matched
+    if len(highest) == len(fp_names):
+        exp = highest[0]
+    else:
+        exp = None
 
-
-
-        for fp_name in fp_names:
-            X[-1] += list(fp_data[i][fp_name])
-            count = 0
-            for neighbor in sorted(nmap[fp_name][i], key=nmap[fp_name][i].get, reverse=True):
-                if neighbor in test_idx:
-                    continue
-                X[-1] += [nmap[fp_name][i][neighbor], fp_data[neighbor]['value']]
-                count += 1
-                if count == 5:
-                    break
     return pred, exp
 
 if __name__ == '__main__':
