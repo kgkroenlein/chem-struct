@@ -241,3 +241,76 @@ ALTER TABLE chemstruct.lipophilicity
 ADD CONSTRAINT fk_lipo_molregno
 FOREIGN KEY (molregno)
 REFERENCES molecule_dictionary(molregno);
+
+-- Generate pivot table lipophilicity fingerprints
+SELECT  *
+INTO    rdk.fp2fp
+FROM (
+    SELECT  fp1.molregno AS molregno1,
+            fp2.molregno molregno2,
+            tanimoto_sml(fp1.torsionbv,fp2.torsionbv) AS torsionbv_sim,
+            tanimoto_sml(fp1.mfp2,fp2.mfp2) AS mfp2_sim,
+            tanimoto_sml(fp1.ffp2,fp2.ffp2) AS ffp2_sim,
+            tanimoto_sml(fp1.rdkitbv,fp2.rdkitbv) AS rdkitbv_sim,
+            tanimoto_sml(fp1.atompair,fp2.atompair) AS atompair_sim,
+            tanimoto_sml(fp1.maccs,fp2.maccs) AS maccs_sim
+    FROM    rdk.fps fp1,
+            rdk.fps fp2,
+            chemstruct.lipophilicity l1,
+            chemstruct.lipophilicity l2
+    WHERE   l1.molregno = fp1.molregno
+    AND     l1.molregno < l2.molregno
+    AND     l2.molregno = fp2.molregno
+  ) AS tmp
+;
+
+-- And the other half of the table
+INSERT INTO rdk.fp2fp
+SELECT  src.molregno2 AS molregno1,
+        src.molregno1 AS molregno2,
+        src.torsionbv_sim AS torsionbv_sim,
+        src.mfp2_sim AS mfp2_sim,
+        src.ffp2_sim AS ffp2_sim,
+        src.rdkitbv_sim AS rdkitbv_sim,
+        src.atompair_sim AS atompair_sim,
+        src.maccs_sim AS maccs_sim
+FROM    rdk.fp2fp AS src
+WHERE   src.molregno1 < src.molregno2
+;
+
+-- And add a primary key
+ALTER TABLE rdk.fp2fp
+ADD PRIMARY KEY (molregno1,molregno2)
+;
+
+-- And turn column 1 into a foreign key
+ALTER TABLE rdk.fp2fp
+ADD CONSTRAINT fk_fp2fp_molregno1
+FOREIGN KEY (molregno1)
+REFERENCES molecule_dictionary(molregno);
+
+-- And turn column 2 into a foreign key
+ALTER TABLE rdk.fp2fp
+ADD CONSTRAINT fk_fp2fp_molregno1
+FOREIGN KEY (molregno2)
+REFERENCES molecule_dictionary(molregno);
+
+-- Index fingerprint/molreg2 combos for sorting
+CREATE INDEX fp2fp_torsionbv_idx
+ON rdk.fp2fp (molregno1, torsionbv_sim)
+;
+CREATE INDEX fp2fp_mfp2_idx
+ON rdk.fp2fp (molregno1, mfp2_sim)
+;
+CREATE INDEX fp2fp_ffp2_idx
+ON rdk.fp2fp (molregno1, ffp2_sim)
+;
+CREATE INDEX fp2fp_rdkitbv_idx
+ON rdk.fp2fp (molregno1, rdkitbv_sim)
+;
+CREATE INDEX fp2fp_atompair_idx
+ON rdk.fp2fp (molregno1, atompair_sim)
+;
+CREATE INDEX fp2fp_maccs_idx
+ON rdk.fp2fp (molregno1, maccs_sim)
+;
