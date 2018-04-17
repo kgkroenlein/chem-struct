@@ -148,7 +148,7 @@ def all_data(conn, neighbors=5):
 
     X = []
     y = []
-    for id in train_ids:
+    for id in lipo_dict.keys():
         y += [lipo_dict[id]]
         row_data = []
         for fp_name in fp_names:
@@ -331,5 +331,5 @@ if __name__ == '__main__':
     conn = aws_context_db()
     X, y = all_data(conn)
     rf = RandomForestRegressor(n_estimators = 1000, max_depth=10, n_jobs = -1)
-    rf.fit(X_train, y_train)
+    rf.fit(X, y)
     store_data(rf, 'lipo_model.pkl')
