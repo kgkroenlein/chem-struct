@@ -79,17 +79,10 @@
         }
     </script>
 </head>
-<body onload="init()" style="font-family: sans-serif;background-color: whitesmoke;font-size: large;">
-    <div id='2DChem' style='width:600px; height:400px'></div>
+<body onload="init()" style="font-family: sans-serif;background-color: whitesmoke; font-size: large; text-align: center">
+    <div id='2DChem' style='width:600px; height:400px; background-color: whitesmoke;'></div>
     <div id='3DChem' style='width:600px; height:400px'></div>
     <br />
-    <h3>
-        {% if regno is none %}
-        <a href="#" onclick="submitMol();return false;">k-Nearest neighbors</a>
-        {% else %}
-        <a href="/closest?regno={{ regno }}" >k-Nearest neighbors</a>
-        {% endif %}
-    </h3>
 
     <table id='properties'>
         <th>Property</th><th>Predicted</th><th>Experimental</th>
@@ -103,5 +96,13 @@
         </tr>
         {% endfor %}
     </table>
+
+    <h3>
+        {% if regno is none %}
+        <a href="#" onclick="submitMol();return false;">k-Nearest neighbors</a>
+        {% else %}
+        <a href="/closest?regno={{ regno }}" >k-Nearest neighbors</a>
+        {% endif %}
+    </h3>
 </body>
 </html>
