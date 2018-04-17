@@ -1,6 +1,6 @@
 # Chem-Struct
 
-### A Web Application for relating chemical properties to underlying structure
+### [A Web Application for relating chemical properties to underlying structure](http://www.chem-struct.info/)
 
 ### Table of Contents
 0. [Table of Contents](#table-of-contents)
@@ -8,20 +8,18 @@
 2. [Data](#data)
 2. [Approach](#approach)
 2. [Installation](#installation)
-3. [Examples](#examples)
-    1. [Example 1](#example-1)
-    2. [Example 2](#example-2)
-    3. [Example 3](#example-3)
 4. [Future Work](#future-work)
 5. [References](#references)
 
 ## Background
-The goal of this project is to explore choices of feature sets and similarity metrics in the field of cheminformatics for building to-purpose hierarchical clustering classifiers. A broad range of challenges facing US society, including forensic analysis fighting the designer drug epidemic, design of efficient chemical manufacturing processes, and drug design in the pharmacological industry, and a direct need to obtain information about the properties and activities of compounds that have never been measured and could plausibly never existed in macroscopic quantities1.
+The goal of this project is to explore choices of feature sets and similarity metrics in the field of cheminformatics for building to-purpose hierarchical clustering classifiers and regressors. A broad range of challenges facing US society, including forensic analysis fighting the designer drug epidemic, design of efficient chemical manufacturing processes, and drug design in the pharmacological industry, and a direct need to obtain information about the properties and activities of compounds that have never been measured and could plausibly never existed in macroscopic quantities<sup>[1][#OBoyle-and-Sayle-2016]</sup>.
 
 ## Data
-A molecular fingerprint is simply a bit vector generated from a large feature set of a two-dimensional chemical structure (a graph with a small amount of 3-dimensional orientation disambiguation). Using molecular fingerprints as the bases for clustering, we can evaluate whether the concepts of chemical relationship as perceived by chemists align with the clustering reported by the algorithm. Further, from a practical perspective, this should allow for rapid determination of whether particular predictive models are likely or unlikely to yield reasonable results for a given molecule.
+A molecular fingerprint is simply a bit vector generated from a large feature set of a two-dimensional chemical structure (a graph with a small amount of 3-dimensional orientation disambiguation). Examples of features might include 'has 5 carbons in a row' or 'has a chlorine two atoms away from a carbon.'  Using molecular fingerprints as the bases for clustering, we can evaluate whether the concepts of chemical relationship as perceived by chemists align with the clustering reported by the algorithm. Further, from a practical perspective, this should allow for rapid determination of whether particular predictive models are likely or unlikely to yield reasonable results for a given molecule.
 
-Regarding data, I presently have access to an archive of around 1.7 million 2-D structures imported from emolecules along with well-curated identifiers. Many of those records also have families of optimized 3-d molecular structures (“conformers”), which may be valuable for physical insight but should not be used in the final modeling efforts. Several million additional two-dimensional structures are available from PubChem if the original data proves inadequate and for vetting coverage over chemical similarity hyperspaces.
+Obtaining chemical structures is straight-forward; for example, [emolecules](https://www.emolecules.com/) makes 17 million (probably) chemically stable structures freely available.  However, with nothing more than a graph representation of the molecule, these become useful only for large searches against a given model.  Indeed, emolecules business model is selling the metadata associated with those compounds on a compound-by-compound basis.
+
+The bigger challenge is finding reliable labels -- in this case, physical property data.  In general, any given property will only have on order one thousand data points; far fewer than we would want to apply many machine learning techniques. While physical models exist for computing many of these properties, the uncertainty on the computations tends to be an order of magnitude larger than on an experiment, and may require months on very expensive hardware to evaluate a single point.  Combining this with the knowledge that experimental approaches are costly and time-consuming, even a structure-driven model of limited reliability has substantial value.
 
 ## Approach
 In addition to the structural information, it is necessary to utilize software libraries to obtain chemical descriptors2.  Beginning with the standard extended molecular fingerprints, candidate subsets and alternative formulations will to evaluated for statistically significant impacts on classification capability.
@@ -31,7 +29,7 @@ Finally, it is necessary to identify score functions for how well any given tree
 Due to the size of the necessary hyperparameter grid search, AWS will be necessary in order to explore the space in a time-efficient, highly parallelized manner. scipy.stats and Scikit Learn will provide the statistical analysis and learning packages (e.g., a/b testing, tree construction).
 
 ## Installation
-The archive should contain everything needed to recreate the tool.  If you are running a new fresh AWS instance (minimum 50 GB attached storage), you can run the following series of commands, presuming you edited your `.ssh/config` file appropriately:
+The archive should contain everything needed to recreate the tool.  If you are running a new fresh AWS instance (recommended 50 GB attached storage), you can run the following series of commands, presuming you edited your `.ssh/config` file appropriately:
 
 ```bash
 ssh $YOUR_AWS_INSTANCE sudo yum install git -y
@@ -41,20 +39,13 @@ ssh $YOUR_AWS_INSTANCE bash chem-struct/fetch_s3.sh
 ssh $YOUR_AWS_INSTANCE bash chem-struct/init.sh
 ```        
 
-Those instructions should end up with a web application hosted on port 8080 of
+Those instructions should end up with a web application hosted on port 80 of
 your AWS instance.  You may wish to ssh into the instance explicitly and run
-`fetch_data.sh` and `init.sh` in a screen session, as it will take a while and
+`fetch_data.sh` and `init.sh` in a screen session, as it may take a while and
 falling prey to a broken pipe would be unfortunate.  Note you must log out of
 the instance after running `aws_docker_init.sh` because of user permissions
 issues.
 
-## Examples
-### Example 1
-TBD
-### Example 2
-TBD
-### Example 3
-TBD
 
 ## Future Work
 * Building out additional predictions
