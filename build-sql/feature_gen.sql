@@ -291,7 +291,7 @@ REFERENCES molecule_dictionary(molregno);
 
 -- And turn column 2 into a foreign key
 ALTER TABLE rdk.fp2fp
-ADD CONSTRAINT fk_fp2fp_molregno1
+ADD CONSTRAINT fk_fp2fp_molregno2
 FOREIGN KEY (molregno2)
 REFERENCES molecule_dictionary(molregno);
 
