@@ -11,3 +11,6 @@ DOCKERDB=`docker run -d -p 54321:5432 --name csdb rdkit-db`
 docker exec $DOCKERDB bash custom/init_data.sh
 
 docker run -d -p 8080:8080 --link csdb:db --name csapp rdkit-app python app/app.py
+
+# Connect external port 80 (HTTP) to 8080
+sudo iptables -t nat -I PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
