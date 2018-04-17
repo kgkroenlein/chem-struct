@@ -4,6 +4,26 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Chem-Struct</title>
+    <style>
+    #properties {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+    #properties td, #properties th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    #properties tr:nth-child(even){background-color: #f2f2f2;}
+    #properties tr:hover {background-color: #ddd;}
+    #properties th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #4CAF50;
+        color: white;
+    }
+    </style>
     <script src="{{ url_for('static', filename='raphael-min.2.0.1.js') }}"></script>
     <script src="{{ url_for('static', filename='Three.js') }}"></script>
     <script src="{{
@@ -59,7 +79,7 @@
         }
     </script>
 </head>
-<body onload="init()">
+<body onload="init()" style="font-family: sans-serif;background-color: whitesmoke;font-size: large;">
     <div id='2DChem' style='width:600px; height:400px'></div>
     <div id='3DChem' style='width:600px; height:400px'></div>
     <br />
@@ -71,7 +91,7 @@
         {% endif %}
     </h3>
 
-    <table>
+    <table id='properties'>
         <th>Property</th><th>Predicted</th><th>Experimental</th>
         {% for item in items %}
         <tr>

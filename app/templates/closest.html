@@ -34,8 +34,23 @@
         </script>
     {% endfor %}
 {% endfor %}
+        <script>
+            function init()
+            {
+                // adjust size
+                adjustSize();
+
+                window.onresize = adjustSize;
+            }
+            function adjustSize()
+            {
+                var elem = document.getElementById('neighbors');
+                var dim = Kekule.HtmlElementUtils.getViewportDimension(document);
+                elem.setWidth(dim.width + 'px');
+            }
+        </script>
     </head>
-    <body>
+    <body onload="init()" style="font-family: sans-serif;background-color: whitesmoke;font-size: large;">
 <!-- INSERT inital compound -->
 
         <div id="chemViewer" style="width:600px;height:400px"
