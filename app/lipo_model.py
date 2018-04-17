@@ -212,7 +212,7 @@ def predict(ctab, neighbors=5, conn = None):
 
 
     """
-    model = load_data('lipo_model.pkl')
+    model = load_data('app/lipo_model.pkl')
 
     if not conn:
         from util import aws_context_db
