@@ -45,12 +45,12 @@
             function adjustSize()
             {
                 var elem = document.getElementById('neighbors');
-                var dim = Kekule.HtmlElementUtils.getViewportDimension(document);
+                var dim = document.documentElement.clientWidth;
                 elem.setWidth(dim.width + 'px');
             }
         </script>
     </head>
-    <body onload="init()" style="font-family: sans-serif;background-color: whitesmoke;font-size: large;">
+    <body onload="init()" style="font-family: sans-serif;background-color: whitesmoke;font-size: large; text-align: center">
 <!-- INSERT inital compound -->
 
         <div id="chemViewer" style="width:600px;height:400px"
