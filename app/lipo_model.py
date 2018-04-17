@@ -287,7 +287,7 @@ def predict(ctab, neighbors=5, conn = None):
         SELECT  lipophilicity.value AS val,
                 tanimoto_sml(%s, fps.{}) AS similarity
         FROM    lipophilicity,
-                rdk.fps,
+                rdk.fps
         WHERE   %s %% fps.{}
           AND   lipophilicity.molregno = fps.molregno
         ORDER BY %s <%%> fps.{}
@@ -296,12 +296,13 @@ def predict(ctab, neighbors=5, conn = None):
 
         for fp_name in fp_names:
             tol = 0.5
-            neighbor_sql = neighbor_sql_tmpl.format( (fp_name,)*3, neighbors )
+            neighbor_sql = neighbor_sql_tmpl.format(fp_name, fp_name, fp_name,
+                                                    neighbors )
 
             attempt = np.zeros([2*neighbors,])
             while True:
                 cur.execute(neighbor_sql, (fp_dict[fp_name],)*3)
-                for i, (value, similarity) in enumerate(n_cur):
+                for i, (value, similarity) in enumerate(cur):
                     attempt[2*i]   = similarity
                     attempt[2*i+1] = value
 
