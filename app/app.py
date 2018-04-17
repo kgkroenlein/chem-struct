@@ -196,13 +196,13 @@ def predict():
 
     pred, exp = lipo_model.predict(ctab)
     results = [{'link': 'https://en.wikipedia.org/wiki/Lipophilicity',
-                'cat': 'Lipophilicity', 'pred': '{:0.4g}'.format(pred),
-                'exp': '{:0.4g}'.format(exp), },
+                'cat': 'Lipophilicity', 'pred': pred, 'exp': exp },
                 ]
-    if results[0]['pred']:
-        results[0]['pred'] = '{:0.4g}'.format(results[0]['pred'])
-    if results[0]['exp']:
-        results[0]['exp'] = '{:0.4g}'.format(results[0]['exp'])
+    for res in results:
+        if res['pred']:
+            res['pred'] = '{:0.4g}'.format(res['pred'])
+        if res['exp']:
+            res['exp'] = '{:0.4g}'.format(res['exp'])
     return render_template('predict.html', mol = ctab, items = results,
                             regno = regno
                             )
