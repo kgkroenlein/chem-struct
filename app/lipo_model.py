@@ -324,7 +324,7 @@ def predict(ctab, neighbors=5, conn = None):
         for fp_name in fp_names:
             X += list(fp2bits(fp_dict[fp_name]))
 
-    pred = model.predict(np.array(X).reshape(1, -1))
+    pred = model.predict(np.array(X).reshape(1, -1))[0]
 
     return pred, exp
 
