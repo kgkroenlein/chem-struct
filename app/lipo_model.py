@@ -279,7 +279,7 @@ def predict(ctab, neighbors=5, conn = None):
                 if len(X) % (2*neighbors) == 0:
                     break
         for fp_name in fp_names:
-            row_data += list(fp2bits(fp_dict[fp_name]))
+            X += list(fp2bits(fp_dict[fp_name]))
 
     else: # Gotta search 'em all
         # Grab near neighbors, with multiple levels of escaping going on
