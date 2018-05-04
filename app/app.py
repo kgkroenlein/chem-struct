@@ -73,9 +73,11 @@ def closest():
             compound_structures.molfile AS molfile
     FROM    rdk.fps,
             compound_structures,
+            lipophilicity,
             {}(mol_from_ctab($1)) AS target
     WHERE   target%fps.{}
       AND   fps.molregno = compound_structures.molregno
+      AND   lipophilicity.molregno = compound_structures.molregno
     ORDER BY target<%>fps.{}
     LIMIT   {}
     '''
@@ -174,7 +176,15 @@ def predict():
         ctab = None
         for (molfile,) in base_cur:
             ctab = molfile
-
+        try: # Try structural optimization
+            mol = Chem.MolFromMolBlock(ctab)
+            mol = Chem.AddHs(mol)
+            AllChem.EmbedMolecule(mol,AllChem.ETKDG())
+            mol = Chem.RemoveHs(mol)
+            ctab = Chem.MolToMolBlock(mol)
+        except:
+            pass # Swallow the failure
+        
     else:
         if 'mol' not in request.form:
             abort(404, description="Required parameter is missing")
